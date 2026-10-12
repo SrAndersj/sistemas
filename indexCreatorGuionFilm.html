@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Editor de Guion Web - Storyboard Técnico</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0; padding: 0;
+      background-color: #121212; color: #ccc;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      height: 100vh; overflow: hidden;
+    }
+
+    header {
+      position: absolute; top: 0; left: 0; right: 0; height: 55px;
+      background-color: #2d2d2d; padding: 8px 16px;
+      display: flex; gap: 10px; align-items: center;
+      border-bottom: 1px solid #3d3d3d; z-index: 1000;
+    }
+
+    button, label.btn, select, input[type="text"] {
+      background-color: #383838; color: #fff; border: 1px solid #555; 
+      padding: 6px 12px; font-size: 13px; border-radius: 4px; outline: none;
+    }
+    button { cursor: pointer; }
+    button:hover, label.btn:hover { background-color: #4a4a4a; }
+    .btn-primary { background-color: #006bb3; border-color: #005999; font-weight: bold; }
+    .btn-primary:hover { background-color: #007acc; }
+
+    input[type="file"] { display: none; }
+
+    .selector-container { display: flex; align-items: center; gap: 6px; margin-left: 10px; }
+    #block-type-select { background-color: #111; color: #007acc; font-weight: bold; border: 1px solid #007acc; }
+
+    .status-indicator {
+      margin-left: auto; font-size: 11px; color: #4cd964; display: flex; align-items: center; gap: 5px;
+    }
+    .status-dot { width: 8px; height: 8px; background: #4cd964; border-radius: 50%; display: inline-block; }
+
+    #workspace { display: flex; width: 100%; height: calc(100vh - 55px); margin-top: 55px; }
+
+    #editor-container {
+      flex: 1; overflow-y: auto; display: flex; justify-content: center;
+      padding: 40px 20px; background-color: #1a1a1a; transition: all 0.3s ease;
+    }
+
+    #script-editor {
+      width: 210mm; min-height: 297mm; height: max-content;
+      background-color: #ffffff;
+      background-image: repeating-linear-gradient(to bottom, transparent, transparent 1055px, #e0e0e0 1055px, #e0e0e0 1056px, transparent 1056px, transparent 1056px);
+      color: #000000; padding: 25mm 20mm 25mm 35mm;
+      box-shadow: 0 0 20px rgba(0,0,0,0.8);
+      font-family: 'Courier Prime', 'Courier New', Courier, monospace;
+      font-size: 12pt; line-height: 1.15; outline: none; white-space: pre-wrap;
+    }
+
+    .line { min-height: 1.15em; margin: 0; padding: 0; word-wrap: break-word; }
+    .scene { text-transform: uppercase; font-weight: bold; margin-top: 1.2em; margin-bottom: 0.4em; }
+    .action { text-transform: none; margin-bottom: 0.8em; }
+    .character { text-transform: uppercase; margin-top: 0.8em; margin-left: 35%; width: 65%; }
+    .parenthetical { margin-left: 25%; width: 45%; }
+    .dialogue { margin-left: 18%; margin-right: 18%; margin-bottom: 0.8em; }
+    .transition { text-transform: uppercase; margin-left: 60%; margin-top: 0.8em; margin-bottom: 0.8em; }
+
+    #sidebar {
+      width: 350px; background-color: #222; border-left: 1px solid #3d3d3d;
+      display: flex; flex-direction: column; transition: all 0.3s ease;
+    }
+    #sidebar.hidden { display: none; width: 0; }
+
+    .sidebar-section { padding: 15px; flex: 1; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; }
+    .sidebar-section h3 { margin: 0; font-size: 14px; color: #007acc; text-transform: uppercase; }
+    
+    #current-scene-label { font-size: 11px; color: #aaa; background: #111; padding: 5px; border-radius: 4px; word-wrap: break-word; }
+    #storyboard-placeholder {
+      width: 100%; height: 180px; background-color: #111; border: 2px dashed #555;
+      display: flex; align-items: center; justify-content: center; overflow: hidden;
+      color: #888; font-size: 12px; text-align: center; border-radius: 4px; flex-direction: column;
+      position: relative;
+    }
+    #storyboard-placeholder img { width: 100%; height: 100%; object-fit: cover; }
+    
+    .path-label {
+      font-size: 10px; color: #007acc; background: rgba(0,0,0,0.8); padding: 2px 5px; 
+      position: absolute; bottom: 5px; right: 5px; border-radius: 3px; max-width: 90%; word-wrap: break-word;
+    }
+
+    .btn-group-storyboard { display: flex; gap: 5px; }
+    .btn-group-storyboard label { flex: 1; text-align: center; cursor: pointer; }
+    .btn-danger-mini { flex: none; background-color: #4a1f1f; border-color: #7a2f2f; }
+    .btn-danger-mini:hover { background-color: #6a2a2a; }
+
+    #thumb-strip { display: flex; flex-wrap: wrap; gap: 6px; }
+    .thumb-item { position: relative; width: 78px; height: 78px; border-radius: 4px; overflow: hidden; border: 1px solid #444; background: #111; }
+    .thumb-item img { width: 100%; height: 100%; object-fit: cover; display: block; cursor: pointer; }
+    .thumb-item.active { border-color: #007acc; box-shadow: 0 0 0 2px #007acc; }
+    .thumb-remove {
+      position: absolute; top: 2px; right: 2px; width: 18px; height: 18px; line-height: 16px;
+      background: rgba(0,0,0,0.75); color: #ff6b6b; border: none; border-radius: 3px;
+      font-size: 11px; text-align: center; cursor: pointer; padding: 0;
+    }
+    .thumb-remove:hover { background: rgba(0,0,0,0.95); }
+    .thumb-count { font-size: 10px; color: #007acc; text-align: center; }
+
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.85); z-index: 3000; display: none;
+      align-items: center; justify-content: center;
+    }
+    #gallery-modal { flex-direction: column; padding: 20px; overflow-y: auto; }
+    .gallery-container { background: #f0f0f0; padding: 20px; width: 95%; height: 90%; border-radius: 8px; display: flex; flex-direction: column; overflow: hidden; }
+    #gallery-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 15px; border-bottom: 1px solid #ddd; margin-bottom: 20px; color: #333; }
+    #gallery-header h2 { margin: 0; font-size: 18px; }
+    
+    #gallery-grid { 
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); 
+      gap: 20px; overflow-y: auto; flex: 1; padding-right: 10px;
+    }
+    
+    .storyboard-card {
+      background: #fff; border-radius: 6px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      display: flex; flex-direction: column; border: 1px solid #ddd; overflow: hidden; position: relative;
+    }
+    .sb-image-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+      gap: 3px; padding: 3px; background: #000; border-bottom: 1px solid #eee;
+      max-height: 220px; overflow-y: auto;
+    }
+    .sb-image-grid img {
+      width: 100%; height: 90px; object-fit: cover; display: block; background: #000;
+    }
+    .sb-card-header {
+      padding: 10px 15px; background: #fafafa; border-bottom: 1px solid #eee;
+      display: flex; gap: 10px; align-items: center; font-size: 11px; color: #666;
+    }
+    .sb-frame-num { background: #eee; padding: 3px 8px; border-radius: 4px; font-weight: bold; }
+    .sb-card-body {
+      padding: 15px; font-size: 12px; color: #444; max-height: 180px; overflow-y: auto;
+    }
+    .sb-text-line { margin-bottom: 8px; line-height: 1.4; }
+    .sb-text-char { font-weight: bold; text-transform: uppercase; margin-top: 8px; }
+    .sb-text-dialogue { font-style: italic; color: #555; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <button id="btn-open-file">📂 Abrir Proyecto JSON</button>
+    <button class="btn-primary" id="btn-save-direct">💾 Guardar Como JSON</button>
+    <button id="btn-export-trelby">📤 Exp. Trelby</button>
+    
+    <button id="btn-toggle-sidebar" style="margin-left:10px;">👁️ Panel Storyboard</button>
+    <button id="btn-open-gallery">🖼️ Ver Storyboards</button>
+
+    <div class="selector-container">
+      <label for="block-type-select" style="font-size:12px;">Tipo:</label>
+      <select id="block-type-select">
+        <option value="scene">1. ESCENA</option>
+        <option value="action" selected>2. ACCIÓN</option>
+        <option value="character">3. PERSONAJE</option>
+        <option value="parenthetical">4. ACOTACIÓN</option>
+        <option value="dialogue">5. DIÁLOGO</option>
+        <option value="transition">6. TRANSICIÓN</option>
+      </select>
+    </div>
+
+    <div class="status-indicator">
+      <span class="status-dot"></span>
+      <span id="sync-status">Guardado automático activo</span>
+    </div>
+  </header>
+
+  <div id="workspace">
+    <div id="editor-container">
+      <div id="script-editor" contenteditable="true" spellcheck="false">
+        <div class="line scene">EXT. CASCADA - ATARDECER</div>
+        <div class="line action">Murui (20) se encuentra sentado en una roca.</div>
+      </div>
+    </div>
+
+    <aside id="sidebar">
+      <div class="sidebar-section">
+        <h3>🎬 Storyboard Técnico</h3>
+        <div id="current-scene-label">Escena actual: EXT. CASCADA - ATARDECER</div>
+        
+        <div id="storyboard-placeholder">
+          <span>Selecciona o crea una escena.</span>
+        </div>
+
+        <div id="thumb-strip"></div>
+        
+        <div class="btn-group-storyboard">
+          <label class="btn btn-primary" for="image-upload">📷 Añadir Imagen(es)</label>
+          <input type="file" id="image-upload" accept="image/*" multiple>
+        </div>
+        
+        <p style="font-size:10px; color:#888; text-align:center;">*Puedes añadir varias imágenes a la misma escena. Se guardan dentro del proyecto (Base64), no dependen de rutas externas.</p>
+      </div>
+    </aside>
+  </div>
+
+  <div id="gallery-modal" class="modal-overlay">
+    <div class="gallery-container">
+      <div id="gallery-header">
+        <h2>Proyecto: Visor de Storyboard</h2>
+        <button id="gallery-close" style="background:#222; color:#fff; border:none; padding:8px 15px; cursor:pointer; border-radius:4px;">Cerrar Tablero</button>
+      </div>
+      <div id="gallery-grid"></div>
+    </div>
+  </div>
+
+  <script>
+    const editor = document.getElementById('script-editor');
+    const blockSelect = document.getElementById('block-type-select');
+    const btnOpenFile = document.getElementById('btn-open-file');
+    const btnSaveDirect = document.getElementById('btn-save-direct');
+    const btnExportTrelby = document.getElementById('btn-export-trelby');
+    const sceneLabel = document.getElementById('current-scene-label');
+    const sidebar = document.getElementById('sidebar');
+    const placeholder = document.getElementById('storyboard-placeholder');
+    const thumbStrip = document.getElementById('thumb-strip');
+    const imageUpload = document.getElementById('image-upload');
+    const galleryModal = document.getElementById('gallery-modal');
+    const syncStatus = document.getElementById('sync-status');
+    
+    const TYPES = ['scene', 'action', 'character', 'parenthetical', 'dialogue', 'transition'];
+    
+    // Cada escena guarda una LISTA de imágenes: storyboardData[escena] = [ { data, name }, ... ]
+    // "data" es un data-URL Base64, así la imagen se ve siempre sin depender de rutas externas.
+    let storyboardData = {}; 
+    let currentSceneText = null;
+    let activeImageIndex = 0; // qué imagen de la lista se muestra en grande en el panel lateral
+
+    function normalizeScene(text) {
+      return text ? text.trim().toUpperCase().replace(/\s+/g, ' ') : '';
+    }
+
+    // --- AUTO-GUARDADO (IndexedDB) para persistir recargas de página ---
+    function openDB() {
+      return new Promise((resolve, reject) => {
+        const req = indexedDB.open("ScriptPathsDB", 1);
+        req.onupgradeneeded = () => req.result.createObjectStore("project");
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error);
+      });
+    }
+
+    async function saveToDB(data) {
+      try {
+        const db = await openDB();
+        const tx = db.transaction("project", "readwrite");
+        tx.objectStore("project").put(data, "currentProject");
+        syncStatus.textContent = "Cambios guardados";
+      } catch (e) {
+        console.error("Error BD:", e);
+        syncStatus.textContent = "Error al guardar";
+      }
+    }
+
+    async function loadFromDB() {
+      try {
+        const db = await openDB();
+        return new Promise((resolve) => {
+          const tx = db.transaction("project", "readonly");
+          const req = tx.objectStore("project").get("currentProject");
+          req.onsuccess = () => resolve(req.result);
+          req.onerror = () => resolve(null);
+        });
+      } catch (e) {
+        return null;
+      }
+    }
+
+    // --- ESTRUCTURA DEL PROYECTO (Texto del guion + Imágenes en Base64) ---
+    function getProjectJSONData() {
+      const lines = editor.querySelectorAll('.line');
+      const scriptData = [];
+      lines.forEach(line => { 
+        scriptData.push({ 
+          type: getLineType(line), 
+          text: line.textContent.trim() 
+        }); 
+      });
+      return { script: scriptData, storyboards: storyboardData };
+    }
+
+    async function saveDirectSilent() {
+      syncStatus.textContent = "Guardando...";
+      const data = getProjectJSONData();
+      await saveToDB(data); // Auto-guarda en IndexedDB (incluye las imágenes) para evitar pérdidas al recargar
+    }
+
+    // Descarga el JSON completo, con las imágenes embebidas en Base64
+    async function downloadJSON() {
+      const data = getProjectJSONData();
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'proyecto_guion.json';
+      a.click();
+    }
+
+    function openFile() {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.json,.trelby,.txt';
+      input.onchange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          if (file.name.endsWith('.json')) parseJsonContent(event.target.result);
+          else parseTrelbyContent(event.target.result);
+          saveDirectSilent();
+        };
+        reader.readAsText(file);
+      };
+      input.click();
+    }
+
+    btnOpenFile.addEventListener('click', openFile);
+    btnSaveDirect.addEventListener('click', downloadJSON);
+
+    // --- VINCULACIÓN DE IMÁGENES (Base64 real, varias por escena) ---
+    function readFileAsDataURL(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (event) => resolve(event.target.result);
+        reader.onerror = () => reject(new Error('No se pudo leer ' + file.name));
+        reader.readAsDataURL(file);
+      });
+    }
+
+    imageUpload.addEventListener('change', async (e) => {
+      const files = Array.from(e.target.files || []);
+      if (files.length === 0) return;
+      if (!currentSceneText) { alert("Haz clic en una escena del guion primero."); imageUpload.value = ''; return; }
+
+      const key = normalizeScene(currentSceneText);
+      if (!storyboardData[key]) storyboardData[key] = [];
+
+      for (const file of files) {
+        try {
+          const dataUrl = await readFileAsDataURL(file);
+          storyboardData[key].push({ data: dataUrl, name: file.name });
+        } catch (err) {
+          console.error(err);
+          alert("No se pudo leer una de las imágenes: " + file.name);
+        }
+      }
+
+      // Muestra la última añadida
+      activeImageIndex = storyboardData[key].length - 1;
+      updateSidebarImage();
+      await saveDirectSilent(); // guarda de inmediato en IndexedDB
+      imageUpload.value = '';
+    });
+
+    async function removeImageAt(index) {
+      if (!currentSceneText) return;
+      const key = normalizeScene(currentSceneText);
+      const list = storyboardData[key];
+      if (!list || !list[index]) return;
+      list.splice(index, 1);
+      if (list.length === 0) delete storyboardData[key];
+      activeImageIndex = Math.max(0, Math.min(activeImageIndex, (storyboardData[key]?.length || 1) - 1));
+      updateSidebarImage();
+      await saveDirectSilent();
+    }
+
+
+    // --- PANEL LATERAL Y VISTAS ---
+    document.getElementById('btn-toggle-sidebar').addEventListener('click', () => { sidebar.classList.toggle('hidden'); });
+    document.getElementById('btn-open-gallery').addEventListener('click', () => { renderGallery(); galleryModal.style.display = 'flex'; });
+    document.getElementById('gallery-close').addEventListener('click', () => { galleryModal.style.display = 'none'; });
+
+    function getSceneTextForStoryboard(sceneName) {
+      const lines = Array.from(editor.querySelectorAll('.line'));
+      const sceneIndex = lines.findIndex(l => l.classList.contains('scene') && normalizeScene(l.textContent) === normalizeScene(sceneName));
+      if (sceneIndex === -1) return [];
+
+      let extracted = [];
+      for (let i = sceneIndex + 1; i < lines.length; i++) {
+        if (lines[i].classList.contains('scene')) break;
+        const text = lines[i].textContent.trim();
+        if (text) extracted.push({ type: getLineType(lines[i]), text: text });
+      }
+      return extracted;
+    }
+
+    // Normaliza la entrada de una escena a SIEMPRE una lista de { data, name },
+    // sin importar si viene del formato nuevo (array), del formato de una sola imagen
+    // ({data,name}) o del formato antiguo de solo ruta (string).
+    function getImageList(entry) {
+      if (!entry) return [];
+      if (Array.isArray(entry)) return entry;
+      if (typeof entry === 'string') return [{ data: entry, name: entry }];
+      if (typeof entry === 'object') return [entry]; // formato viejo de una sola imagen
+      return [];
+    }
+
+    function renderGallery() {
+      const grid = document.getElementById('gallery-grid');
+      grid.innerHTML = '';
+      const scenes = Object.keys(storyboardData);
+      
+      if(scenes.length === 0) {
+        grid.innerHTML = '<p style="color:#666;">Aún no tienes imágenes vinculadas a las escenas.</p>';
+        return;
+      }
+      
+      scenes.forEach((sceneKey, index) => {
+        const scriptLines = getSceneTextForStoryboard(sceneKey);
+        let textHtml = '';
+        
+        scriptLines.forEach(line => {
+          if (line.type === 'action') textHtml += `<div class="sb-text-line">• ${line.text}</div>`;
+          else if (line.type === 'character') textHtml += `<div class="sb-text-char">${line.text}</div>`;
+          else if (line.type === 'dialogue') textHtml += `<div class="sb-text-dialogue">"${line.text}"</div>`;
+          else if (line.type === 'parenthetical') textHtml += `<div class="sb-text-dialogue">(${line.text})</div>`;
+        });
+
+        const list = getImageList(storyboardData[sceneKey]);
+        const imagesHtml = list.map(img => `
+          <img src="${img.data}" alt="${img.name || ''}" title="${img.name || ''}" onerror="this.style.display='none';">
+        `).join('');
+        
+        const card = document.createElement('div');
+        card.className = 'storyboard-card';
+        card.innerHTML = `
+          <div class="sb-image-grid">${imagesHtml}</div>
+          <div class="sb-card-header">
+            <span class="sb-frame-num">Frame ${index + 1}</span>
+            <span><b>${sceneKey}</b></span>
+            <span style="margin-left:auto; color:#999;">${list.length} img.</span>
+          </div>
+          <div class="sb-card-body">
+            ${textHtml || '<span style="color:#aaa;">Sin texto asociado en el guion.</span>'}
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function updateCurrentScene() {
+      const selection = window.getSelection();
+      let node = selection ? selection.anchorNode : null;
+      let currentLine = node ? getLineElement(node) : editor.querySelector('.line');
+      if (!currentLine) return;
+
+      currentSceneText = null;
+      let scanLine = currentLine;
+      while (scanLine) {
+        if (scanLine.classList.contains('scene')) {
+          currentSceneText = scanLine.textContent.trim();
+          break;
+        }
+        scanLine = scanLine.previousElementSibling;
+      }
+      sceneLabel.textContent = `Escena: ${currentSceneText || 'Ninguna'}`;
+      activeImageIndex = 0; // al cambiar de escena, mostrar la primera imagen de esa escena
+      updateSidebarImage();
+    }
+
+    function updateSidebarImage() {
+      thumbStrip.innerHTML = '';
+
+      if (!currentSceneText) { 
+        placeholder.innerHTML = '<span>Selecciona una escena.</span>'; 
+        return; 
+      }
+      
+      const key = normalizeScene(currentSceneText);
+      const list = getImageList(storyboardData[key]);
+
+      if (list.length === 0) {
+        placeholder.innerHTML = '<span>Sin imágenes vinculadas.</span>';
+        return;
+      }
+
+      if (activeImageIndex >= list.length) activeImageIndex = list.length - 1;
+      if (activeImageIndex < 0) activeImageIndex = 0;
+      const active = list[activeImageIndex];
+
+      placeholder.innerHTML = `
+        <img src="${active.data}" alt="${active.name || ''}" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+        <span style="display:none; color:#ff4444; padding:10px;">No se pudo mostrar la imagen.</span>
+        <div class="path-label">${(active.name || '')} (${activeImageIndex + 1}/${list.length})</div>
+      `;
+
+      // Tira de miniaturas, una por imagen de la escena
+      list.forEach((img, i) => {
+        const item = document.createElement('div');
+        item.className = 'thumb-item' + (i === activeImageIndex ? ' active' : '');
+        item.innerHTML = `
+          <img src="${img.data}" alt="${img.name || ''}">
+          <button class="thumb-remove" title="Quitar esta imagen">✕</button>
+        `;
+        item.querySelector('img').addEventListener('click', () => {
+          activeImageIndex = i;
+          updateSidebarImage();
+        });
+        item.querySelector('.thumb-remove').addEventListener('click', (ev) => {
+          ev.stopPropagation();
+          removeImageAt(i);
+        });
+        thumbStrip.appendChild(item);
+      });
+    }
+
+
+    // --- LISTENERS DE TECLADO / EVENTOS DEL EDITOR PARA AUTO-GUARDAR ---
+    editor.addEventListener('input', () => {
+      updateCurrentScene();
+      saveDirectSilent();
+    });
+    
+    editor.addEventListener('keyup', updateCurrentScene);
+    editor.addEventListener('click', updateCurrentScene);
+
+
+    function handleEnter(currentLine) {
+      let currentType = getLineType(currentLine);
+      let newType = 'action';
+      if (currentType === 'scene') newType = 'action';
+      else if (currentType === 'character') newType = 'dialogue';
+      else if (currentType === 'parenthetical') newType = 'dialogue';
+      else if (currentType === 'dialogue') newType = 'action';
+      else if (currentType === 'action') newType = 'action';
+      else if (currentType === 'transition') newType = 'scene';
+
+      const newLine = document.createElement('div');
+      newLine.className = `line ${newType}`;
+      newLine.innerHTML = '<br>';
+      if (currentLine.nextSibling) editor.insertBefore(newLine, currentLine.nextSibling);
+      else editor.appendChild(newLine);
+
+      const selection = window.getSelection();
+      const range = document.createRange();
+      range.setStart(newLine, 0);
+      range.collapse(true);
+      selection.removeAllRanges();
+      selection.addRange(range);
+      updateSelector();
+      saveDirectSilent();
+    }
+
+    editor.addEventListener('paste', (e) => {
+      e.preventDefault();
+      const text = (e.clipboardData || window.clipboardData).getData('text/plain');
+      const selection = window.getSelection();
+      if (!selection.rangeCount) return;
+      selection.deleteFromDocument();
+      const range = selection.getRangeAt(0);
+      const textNode = document.createTextNode(text);
+      range.insertNode(textNode);
+      range.setStartAfter(textNode);
+      range.setEndAfter(textNode);
+      selection.removeAllRanges();
+      selection.addRange(range);
+      updateSelector();
+      saveDirectSilent();
+    });
+
+    editor.addEventListener('keydown', (e) => {
+      const selection = window.getSelection();
+      let currentLine = getLineElement(selection.anchorNode);
+      if (!currentLine) return;
+
+      if (e.ctrlKey && !e.altKey && e.key >= '1' && e.key <= '6') {
+        e.preventDefault();
+        const index = parseInt(e.key) - 1;
+        if (TYPES[index]) { setLineType(currentLine, TYPES[index]); updateSelector(); }
+        saveDirectSilent();
+        return;
+      }
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        let currentType = getLineType(currentLine);
+        let nextIndex = (TYPES.indexOf(currentType) + (e.shiftKey ? -1 : 1) + TYPES.length) % TYPES.length;
+        setLineType(currentLine, TYPES[nextIndex]);
+        updateSelector();
+        saveDirectSilent();
+        return;
+      }
+      if (e.key === 'Enter') { e.preventDefault(); handleEnter(currentLine); }
+    });
+
+    blockSelect.addEventListener('change', (e) => {
+      const selection = window.getSelection();
+      let currentLine = getLineElement(selection.anchorNode);
+      if (currentLine) setLineType(currentLine, e.target.value);
+      saveDirectSilent();
+    });
+
+    document.addEventListener('selectionchange', () => { updateSelector(); });
+
+    function getLineElement(node) {
+      while (node && node !== editor) {
+        if (node.classList && node.classList.contains('line')) return node;
+        node = node.parentNode;
+      }
+      return null;
+    }
+    function getLineType(line) {
+      for (let t of TYPES) { if (line.classList.contains(t)) return t; }
+      return 'action';
+    }
+    function setLineType(line, type) { line.className = `line ${type}`; }
+    function updateSelector() {
+      const selection = window.getSelection();
+      const currentLine = getLineElement(selection.anchorNode);
+      if (currentLine) blockSelect.value = getLineType(currentLine);
+    }
+
+    function selectFirstLine() {
+      const firstLine = editor.querySelector('.line');
+      if (firstLine) {
+        const range = document.createRange();
+        const sel = window.getSelection();
+        range.setStart(firstLine, 0);
+        range.collapse(true);
+        sel.removeAllRanges();
+        sel.addRange(range);
+      }
+    }
+
+    function parseJsonContent(text) {
+      try {
+        const parsed = typeof text === 'string' ? JSON.parse(text) : text;
+        let scriptData = [];
+        storyboardData = {}; // Reseteamos
+
+        if (Array.isArray(parsed)) {
+          scriptData = parsed;
+        } else {
+          scriptData = parsed.script || [];
+          if (parsed.storyboards) {
+            // Cargamos tanto el formato nuevo ({data, name}) como el viejo (solo ruta string)
+            for (let k in parsed.storyboards) {
+              storyboardData[normalizeScene(k)] = parsed.storyboards[k];
+            }
+          }
+        }
+
+        if (scriptData.length > 0) {
+          editor.innerHTML = '';
+          scriptData.forEach(item => {
+            let div = document.createElement('div');
+            div.className = `line ${item.type}`;
+            div.textContent = item.text || '';
+            if (!item.text) div.innerHTML = '<br>';
+            editor.appendChild(div);
+          });
+        }
+
+        selectFirstLine();
+        updateCurrentScene();
+      } catch (err) { console.error("Error leyendo JSON:", err); }
+    }
+
+    function parseTrelbyContent(text) {
+      const lines = text.split('\n');
+      editor.innerHTML = '';
+      storyboardData = {}; 
+      let inScript = false;
+      for (let line of lines) {
+        if (line.startsWith('#Start-Script')) { inScript = true; continue; }
+        if (!inScript) continue;
+        let div = document.createElement('div');
+        let cleanText = line.replace(/^(\.\\|\._|>\.|>:\s*|\.:\s*|\.\(|\.\/|\.\.|\.\[|\.=)/, '').trim();
+        if (line.startsWith('.\\')) div.className = 'line scene';
+        else if (line.startsWith('._')) div.className = 'line character';
+        else if (line.startsWith('>.') || line.startsWith('..')) div.className = 'line action';
+        else if (line.startsWith('>:') || line.startsWith('.:')) div.className = 'line dialogue';
+        else if (line.startsWith('.(')) div.className = 'line parenthetical';
+        else if (line.startsWith('./')) div.className = 'line transition';
+        else { div.className = 'line action'; cleanText = line.trim(); }
+        div.textContent = cleanText || '';
+        if (!cleanText) div.innerHTML = '<br>';
+        editor.appendChild(div);
+      }
+      selectFirstLine();
+      updateCurrentScene();
+    }
+
+    btnExportTrelby.addEventListener('click', () => {
+      let trelbyOutput = `#Version 3\n#Start-Script\n`;
+      const lines = editor.querySelectorAll('.line');
+      lines.forEach(line => {
+        const text = line.textContent.trim();
+        if (!text) return;
+        const type = getLineType(line);
+        if (type === 'scene') trelbyOutput += `.\\${text}\n`;
+        else if (type === 'character') trelbyOutput += `._${text}\n`;
+        else if (type === 'action') trelbyOutput += `>.${text}\n`;
+        else if (type === 'dialogue') trelbyOutput += `>:${text}\n`;
+        else if (type === 'parenthetical') trelbyOutput += `.(${text}\n`;
+        else if (type === 'transition') trelbyOutput += `./${text}\n`;
+      });
+      const blob = new Blob([trelbyOutput], { type: 'text/plain;charset=utf-8' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'exportado.trelby';
+      a.click();
+    });
+
+    // CARGA DE PERSISTENCIA AUTOMÁTICA AL ABRIR/RECARGAR LA PÁGINA
+    window.addEventListener('DOMContentLoaded', async () => {
+      const savedData = await loadFromDB();
+      if (savedData) {
+        parseJsonContent(savedData);
+      }
+    });
+  </script>
+</body>
+</html>
