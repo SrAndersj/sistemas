@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Sinopsis - Guía Original</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4eaf2 100%);
+            color: #2c3e50;
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            max-width: 1200px;
+            margin: 0 auto;
+            gap: 20px;
+        }
+        
+        header {
+            width: 100%;
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(to right, #2c3e50, #4a6491);
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        
+        .questions-panel {
+            flex: 1;
+            min-width: 300px;
+            background-color: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+        }
+        
+        .synopsis-panel {
+            flex: 1;
+            min-width: 300px;
+            background-color: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        h1 {
+            margin-bottom: 10px;
+            color: white;
+            font-size: 2.2rem;
+        }
+        
+        h2 {
+            margin-bottom: 20px;
+            color: #2c3e50;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .question {
+            margin-bottom: 20px;
+            transition: transform 0.3s;
+        }
+        
+        .question:focus-within {
+            transform: translateX(5px);
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        input:focus, textarea:focus {
+            border-color: #3498db;
+            outline: none;
+            box-shadow: 0 0 8px rgba(52, 152, 219, 0.6);
+            transform: translateY(-2px);
+        }
+        
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .synopsis-text {
+            background-color: #f9f9f9;
+            padding: 25px;
+            border-radius: 8px;
+            border-left: 5px solid #3498db;
+            white-space: pre-wrap;
+            flex-grow: 1;
+            line-height: 1.8;
+            font-weight: bold;
+            overflow-y: auto;
+            max-height: 500px;
+        }
+        
+        .response-text {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        
+        .placeholder {
+            color: #95a5a6;
+            font-style: italic;
+            font-weight: normal;
+        }
+        
+        .instructions {
+            background-color: #e8f4fc;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border-left: 4px solid #3498db;
+            font-size: 14px;
+        }
+        
+        .intro-text {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #2c3e50;
+            font-size: 15px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Generador de Sinopsis</h1>
+            <p>Basado en la guía original del documento PDF</p>
+        </header>
+        
+        <div class="questions-panel">
+            <h2>Preguntas</h2>
+            
+            <div class="intro-text">
+                <p>Responde las siguientes preguntas de la forma más concisa que te sea posible:</p>
+            </div>
+            
+            <div class="question">
+                <label for="titulo">1. ¿Cuál es el título de tu historia?</label>
+                <input type="text" id="titulo" placeholder="Escribe el título aquí">
+            </div>
+            
+            <div class="question">
+                <label for="protagonista">2. ¿Quién es el protagonista de tu historia?</label>
+                <input type="text" id="protagonista" placeholder="Nombre del protagonista">
+            </div>
+            
+            <div class="question">
+                <label for="antecedente">3. ¿Cuál era la situación de tu protagonista antes de la historia? (Este es el ANTECEDENTE).</label>
+                <textarea id="antecedente" placeholder="Describe la situación inicial"></textarea>
+            </div>
+            
+            <div class="question">
+                <label for="detonante">4. ¿Qué mete a tu protagonista en el asunto o problema de la historia? (Este es el DETONANTE).</label>
+                <textarea id="detonante" placeholder="Describe el evento detonante"></textarea>
+            </div>
+            
+            <div class="question">
+                <label for="objetivo">5. ¿Qué es lo que tu protagonista quiere, busca o necesita? (Este es el OBJETIVO).</label>
+                <textarea id="objetivo" placeholder="Describe el objetivo principal"></textarea>
+            </div>
+            
+            <div class="question">
+                <label for="accion">6. ¿Qué hace tu protagonista para obtener lo que quiere, busca o necesita? (Esta es la ACCIÓN principal).</label>
+                <textarea id="accion" placeholder="Describe las acciones principales"></textarea>
+            </div>
+            
+            <div class="question">
+                <label for="dificultad">7. ¿Qué enfrenta tu protagonista para obtener lo que quiere, busca o necesita? (Esta es la DIFICULTAD).</label>
+                <textarea id="dificultad" placeholder="Describe los obstáculos"></textarea>
+            </div>
+            
+            <div class="question">
+                <label for="riesgo">8. ¿Qué puede perder tu protagonista? (Este es el RIESGO).</label>
+                <textarea id="riesgo" placeholder="Describe lo que está en juego"></textarea>
+            </div>
+            
+            <div class="question">
+                <label for="tema">9. ¿Qué aprende o descubre tu protagonista al vivir la historia? (Este es el TEMA).</label>
+                <textarea id="tema" placeholder="Describe el aprendizaje"></textarea>
+            </div>
+            
+            <div class="question">
+                <label for="transformacion">10. ¿Qué cambia en tu protagonista al final de la historia? (Este es el ARCO DE TRANSFORMACIÓN).</label>
+                <textarea id="transformacion" placeholder="Describe la transformación"></textarea>
+            </div>
+            
+            <div class="instructions">
+                <p><strong>Instrucciones:</strong> Completa los campos de la izquierda y observa cómo se genera automáticamente tu sinopsis a la derecha. Las respuestas que proporciones aparecerán en <span style="color: #e74c3c; font-weight: bold;">color rojo</span>.</p>
+                <p>Los campos no completados mostrarán el número de pregunta correspondiente.</p>
+            </div>
+        </div>
+        
+        <div class="synopsis-panel">
+            <h2>Tu Sinopsis</h2>
+            <div class="synopsis-text" id="sinopsis-resultado">
+                <span class="placeholder">Tu sinopsis aparecerá aquí a medida que completes las preguntas...</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Obtener todos los campos de entrada
+            const inputs = document.querySelectorAll('input, textarea');
+            
+            // Añadir event listeners a todos los campos
+            inputs.forEach(input => {
+                input.addEventListener('input', actualizarSinopsis);
+            });
+            
+            // Función para actualizar la sinopsis en tiempo real
+            function actualizarSinopsis() {
+                // Obtener los valores de todos los campos
+                const titulo = document.getElementById('titulo').value || '[1]';
+                const protagonista = document.getElementById('protagonista').value || '[2]';
+                const antecedente = document.getElementById('antecedente').value || '[3]';
+                const detonante = document.getElementById('detonante').value || '[4]';
+                const objetivo = document.getElementById('objetivo').value || '[5]';
+                const accion = document.getElementById('accion').value || '[6]';
+                const dificultad = document.getElementById('dificultad').value || '[7]';
+                const riesgo = document.getElementById('riesgo').value || '[8]';
+                const tema = document.getElementById('tema').value || '[9]';
+                const transformacion = document.getElementById('transformacion').value || '[10]';
+                
+                // Construir la sinopsis con texto en rojo para las respuestas
+                let sinopsis = `<span class="normal-text">${titulo === '[1]' ? '[1]' : `<span class="response-text">${titulo}</span>`} es la historia de ${protagonista === '[2]' ? '[2]' : `<span class="response-text">${protagonista}</span>`}, </span>`;
+                sinopsis += `<span class="normal-text">quien era ${antecedente === '[3]' ? '[3]' : `<span class="response-text">${antecedente}</span>`} hasta que ${detonante === '[4]' ? '[4]' : `<span class="response-text">${detonante}</span>`}. </span>`;
+                sinopsis += `<span class="normal-text">Entonces ${protagonista === '[2]' ? '[2]' : `<span class="response-text">${protagonista}</span>`} tratará de obtener ${objetivo === '[5]' ? '[5]' : `<span class="response-text">${objetivo}</span>`} </span>`;
+                sinopsis += `<span class="normal-text">a través de ${accion === '[6]' ? '[6]' : `<span class="response-text">${accion}</span>`}. Para ello, tendrá que enfrentarse a ${dificultad === '[7]' ? '[7]' : `<span class="response-text">${dificultad}</span>`}, </span>`;
+                sinopsis += `<span class="normal-text">arriesgándose a ${riesgo === '[8]' ? '[8]' : `<span class="response-text">${riesgo}</span>`}. Al final, ${protagonista === '[2]' ? '[2]' : `<span class="response-text">${protagonista}</span>`} </span>`;
+                sinopsis += `<span class="normal-text">descubrirá que ${tema === '[9]' ? '[9]' : `<span class="response-text">${tema}</span>`}, consiguiendo ${transformacion === '[10]' ? '[10]' : `<span class="response-text">${transformacion}</span>`}.</span>`;
+                
+                // Mostrar la sinopsis
+                const resultado = document.getElementById('sinopsis-resultado');
+                resultado.innerHTML = sinopsis;
+                
+                // Si no hay contenido, mostrar el placeholder
+                if (titulo === '[1]' && protagonista === '[2]') {
+                    resultado.innerHTML = '<span class="placeholder">Tu sinopsis aparecerá aquí a medida que completes las preguntas...</span>';
+                }
+            }
+            
+            // Añadir estilos para el texto normal
+            const style = document.createElement('style');
+            style.textContent = `
+                .normal-text {
+                    font-weight: bold;
+                    color: #2c3e50;
+                }
+            `;
+            document.head.appendChild(style);
+        });
+    </script>
+</body>
+</html>
