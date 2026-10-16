@@ -1,0 +1,569 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Centro de gravedad: laboratorio interactivo</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#EAF1F7;--ink:#12233D;--muted:#4D617D;--panel:#FFFFFF;--line:#C4D2E2;--grid:rgba(18,35,61,.07);--acc:#F2B705;--good:#1B998B;--bad:#E4572E;--onacc:#12233D;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0E1A2B;--ink:#E8F0FA;--muted:#9FB3CC;--panel:#16273D;--line:#2B4262;--grid:rgba(255,255,255,.05)}}
+:root[data-theme="dark"]{--bg:#0E1A2B;--ink:#E8F0FA;--muted:#9FB3CC;--panel:#16273D;--line:#2B4262;--grid:rgba(255,255,255,.05)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background-color:var(--bg);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:28px 28px;color:var(--ink);font:400 18px/1.6 Nunito,system-ui,sans-serif}
+main{max-width:860px;margin:0 auto;padding:0 20px 60px}
+h1,h2{font-family:'Bricolage Grotesque',Georgia,sans-serif;line-height:1.05;margin:0}
+h1{font-size:clamp(2.8rem,10vw,5.6rem);font-weight:800;letter-spacing:-.03em}
+h2{font-size:clamp(1.7rem,5vw,2.4rem);font-weight:800;margin-bottom:8px}
+p{margin:0 0 12px;max-width:62ch}
+.hero{display:flex;gap:24px;align-items:flex-start;padding:48px 0 28px}
+.bob{flex:0 0 60px;transform-origin:30px 0;animation:swing 4s ease-out 1 both}
+@keyframes swing{0%{transform:rotate(22deg)}20%{transform:rotate(-14deg)}40%{transform:rotate(8deg)}60%{transform:rotate(-4deg)}80%{transform:rotate(1.5deg)}100%{transform:rotate(0)}}
+@media (prefers-reduced-motion:reduce){.bob{animation:none}}
+.lead{font-size:1.2rem;color:var(--muted);margin-top:14px}
+.btn{display:inline-block;background:var(--acc);color:var(--onacc);font:700 1rem Nunito,sans-serif;border:0;border-radius:10px;padding:10px 18px;cursor:pointer;text-decoration:none}
+.btn.alt{background:transparent;color:var(--ink);border:2px solid var(--ink)}
+button:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(--good);outline-offset:2px}
+section{margin-top:44px}
+.lab{background:var(--panel);border:2px solid var(--ink);border-radius:18px;padding:18px;margin-top:14px}
+.lab svg{width:100%;height:auto;display:block}
+.ctl{display:grid;grid-template-columns:150px 1fr 70px;gap:10px;align-items:center;margin-top:8px;font-weight:700;font-size:.95rem}
+.ctl input{width:100%;accent-color:var(--good)}
+.ctl output{text-align:right;font-variant-numeric:tabular-nums;color:var(--muted)}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.msg{margin-top:12px;padding:12px 14px;border-radius:12px;font-weight:700;border-left:8px solid var(--good);background:color-mix(in srgb,var(--good) 14%,var(--panel))}
+.msg.bad{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 14%,var(--panel))}
+.key{border-left:8px solid var(--acc);background:var(--panel);padding:14px 18px;border-radius:0 14px 14px 0;margin-top:18px;font-weight:700}
+.t{stroke:var(--ink);fill:none;stroke-width:3}
+.txt{fill:var(--ink);font:700 14px Nunito,sans-serif}
+.blk{stroke:var(--ink);stroke-width:3;fill:var(--acc);transform-box:fill-box;transform-origin:center;transition:fill .2s,transform .75s cubic-bezier(.55,0,.9,.5)}
+@media (prefers-reduced-motion:reduce){.blk{transition:fill .2s}}
+.blk.bad,.fallbox.bad{fill:var(--bad)}
+.fallbox{fill:var(--acc);stroke:var(--ink);stroke-width:3;transition:fill .2s}
+.cog{fill:var(--bad);stroke:var(--ink);stroke-width:2}
+.plumb{stroke:var(--bad);stroke-width:3;stroke-dasharray:7 6}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-top:14px}
+.card{background:var(--panel);border:2px solid var(--line);border-radius:14px;padding:14px}
+.card b{font-family:'Bricolage Grotesque',sans-serif;font-size:1.15rem;display:block;margin-bottom:4px}
+.card p{font-size:.95rem;margin:0}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:8px;margin-top:12px}
+.kpi{border:2px solid var(--line);border-radius:10px;padding:8px 10px}
+.kpi small{display:block;color:var(--muted);font-size:.8rem}
+#gwD{transition:transform 1.1s cubic-bezier(.55,0,.9,.5)}#wtD,#prD,#lgD{transition:opacity .6s}
+.part{fill:var(--line);stroke:var(--ink);stroke-width:2.5;transition:fill .2s}.part.sel{fill:var(--acc)}
+.rb{stroke:var(--bad);stroke-width:2.5}
+.bm{fill:var(--line);stroke:var(--ink);stroke-width:3;transition:fill .2s}.bm.bad{fill:var(--bad)}
+#hl,#hr{transition:transform .7s cubic-bezier(.55,0,.9,.5)}
+ol.steps{max-width:62ch;margin:8px 0 0;padding-left:22px}
+.st{background:var(--panel);border:2px solid var(--line);border-radius:14px;padding:12px 16px;margin-top:10px}
+.st h3{margin:0 0 4px;font:800 1.1rem 'Bricolage Grotesque',Georgia,sans-serif}
+.st p{font-size:.95rem;margin:0 0 6px;color:var(--muted)}
+.fx{font-family:'Bricolage Grotesque',Georgia,serif;font-size:1.05rem;overflow-x:auto;white-space:nowrap;padding:3px 0}
+.v{background:color-mix(in srgb,var(--acc) 38%,transparent);border-radius:4px;padding:0 4px;font-weight:800}
+.res{border-bottom:3px solid var(--good)}
+#hsE,#hsQ{transition:transform 1.2s cubic-bezier(.55,0,.9,.5)}
+#bdE{transition:transform .9s cubic-bezier(.5,0,.9,.5)}
+@media (prefers-reduced-motion:reduce){#gwD,#hl,#hr,#hsE,#bdE,#hsQ{transition:none}}
+.kpi b{font-size:1.1rem;font-variant-numeric:tabular-nums}
+.eq{font-family:'Bricolage Grotesque',Georgia,sans-serif;font-weight:500;background:var(--bg);border:2px dashed var(--line);border-radius:12px;padding:10px 14px;margin-top:12px;overflow-x:auto;white-space:nowrap}
+.q{background:var(--panel);border:2px solid var(--ink);border-radius:18px;padding:18px;margin-top:14px}
+.opt{display:block;width:100%;text-align:left;margin-top:8px;background:transparent;color:var(--ink);border:2px solid var(--line);border-radius:10px;padding:10px 12px;font:700 1rem Nunito,sans-serif;cursor:pointer}
+.opt.ok{background:color-mix(in srgb,var(--good) 25%,var(--panel));border-color:var(--good)}
+.opt.no{background:color-mix(in srgb,var(--bad) 25%,var(--panel));border-color:var(--bad)}
+@media (max-width:560px){.ctl{grid-template-columns:1fr 60px}.ctl label{grid-column:1/-1}.hero{flex-direction:column}}
+</style>
+</head>
+<body>
+<main>
+<header class="hero">
+  <svg class="bob" width="60" height="150" viewBox="0 0 60 150" aria-hidden="true"><circle cx="30" cy="5" r="5" fill="var(--ink)"/><line x1="30" y1="5" x2="30" y2="100" stroke="var(--ink)" stroke-width="2"/><path d="M30 92 L46 120 L30 146 L14 120Z" fill="var(--acc)" stroke="var(--ink)" stroke-width="3"/></svg>
+  <div>
+    <h1>Centro de gravedad</h1>
+    <p class="lead">¿Por qué unas cosas se quedan en pie y otras se caen? Juega con tres experimentos, inspirados en el capítulo de <em>Proyecto G</em> (Doctor G), y descúbrelo tú.</p>
+    <a class="btn alt" href="https://www.youtube.com/watch?v=tpTAOeba4ho" target="_blank" rel="noopener">Ver el video</a>
+  </div>
+</header>
+
+<div class="key">El centro de gravedad es el punto donde se considera concentrado todo el peso de un cuerpo. Un objeto se mantiene en pie mientras la línea vertical que baja desde ese punto caiga dentro de su base de apoyo.</div>
+
+<section>
+  <h2>Experimento 1: inclina la caja</h2>
+  <p>Gira la caja sobre su arista. La línea roja es la vertical del centro de gravedad. Compara una caja alta y angosta con una baja y ancha.</p>
+  <div class="lab">
+    <div class="row" role="group" aria-label="Forma de la caja">
+      <button class="btn" id="tall">Alta y angosta</button>
+      <button class="btn alt" id="wide">Baja y ancha</button>
+    </div>
+    <svg viewBox="0 0 600 290" role="img" aria-label="Caja inclinándose sobre una arista">
+      <line class="t" x1="20" y1="250" x2="580" y2="250"/>
+      <g id="boxA" style="transition:transform .3s ease-out"><rect id="rA" class="fallbox"/></g>
+      <line id="plA" class="plumb"/><circle id="cgA" class="cog" r="8"/>
+      <path d="M300 250 l-9 14 h18z" fill="var(--ink)"/>
+      <text class="txt" x="312" y="278">punto de giro</text>
+      <text id="tcg" class="txt">centro de gravedad</text>
+    </svg>
+    <div class="ctl"><label for="angA">Inclinación</label><input id="angA" type="range" min="0" max="90" step="1" value="0"><output id="oA">0°</output></div>
+    <div class="msg" id="mA" aria-live="polite"></div>
+  </div>
+</section>
+
+<section>
+  <h2>Experimento 2: la torre de bloques</h2>
+  <p>Desliza cada bloque hacia la derecha para sacarlo de la mesa sin que se caiga. Cada piso debe sostener el centro de gravedad de todo lo que tiene encima. ¿Cuánto puedes sobresalir?</p>
+  <div class="lab">
+    <svg viewBox="0 0 600 320" role="img" aria-label="Bloques apilados sobresaliendo de una mesa">
+      <rect x="0" y="250" width="250" height="60" fill="var(--line)" stroke="var(--ink)" stroke-width="3"/><line class="t" x1="250" y1="310" x2="600" y2="310"/>
+      <g id="gB"></g>
+      <line id="plB" class="plumb"/><circle id="cgB" class="cog" r="7"/>
+      <text class="txt" x="10" y="240">mesa</text>
+    </svg>
+    <div id="slB"></div>
+    <div class="row"><button class="btn alt" id="rstB">Reiniciar</button><button class="btn" id="bestB">Mostrar la escalera perfecta</button></div>
+    <div class="msg" id="mB" aria-live="polite"></div>
+  </div>
+</section>
+
+<section>
+  <h2>Experimento 3: el palo y el cepillo</h2>
+  <p>Un palo uniforme se equilibra en su mitad. Cuelga un cepillo en un extremo y el centro de gravedad se corre hacia él. Mueve el apoyo hasta encontrar el equilibrio.</p>
+  <div class="lab">
+    <svg viewBox="0 0 600 230" role="img" aria-label="Palo con peso en un extremo sobre un apoyo">
+      <g id="stick"><rect x="100" y="96" width="400" height="14" rx="4" fill="var(--panel)" stroke="var(--ink)" stroke-width="3"/><rect id="brush" y="110" height="40" x="500" width="0" fill="var(--acc)" stroke="var(--ink)" stroke-width="3"/><circle id="cgC" class="cog" r="8" cy="103"/></g>
+      <path id="fulc" fill="var(--ink)"/>
+      <line class="t" x1="20" y1="200" x2="580" y2="200"/>
+    </svg>
+    <div class="ctl"><label for="mC">Peso del cepillo</label><input id="mC" type="range" min="0" max="4" step="0.1" value="1.5"><output id="omC"></output></div>
+    <div class="ctl"><label for="fC">Posición del apoyo</label><input id="fC" type="range" min="-50" max="50" step="0.5" value="0"><output id="ofC"></output></div>
+    <div class="row"><button class="btn" id="solC">Mostrar el equilibrio</button></div>
+    <div class="msg" id="mC2" aria-live="polite"></div>
+  </div>
+</section>
+
+<section>
+  <h2>Ingeniería civil: dónde sirve esto</h2>
+  <div class="grid2">
+    <div class="card"><b>Camiones y volcamiento</b><p>Cargar abajo y ensanchar el eje mantiene la vertical del centro de gravedad dentro de las ruedas en las curvas.</p></div>
+    <div class="card"><b>Grúas torre</b><p>El contrapeso lleva el centro de gravedad de vuelta sobre la base mientras la pluma levanta carga.</p></div>
+    <div class="card"><b>Torre de Pisa</b><p>Está inclinada unos 4°, pero la vertical de su centro de gravedad aún cae dentro de la base.</p></div>
+    <div class="card"><b>Puentes en voladizo</b><p>Se construyen avanzando desde un apoyo, y cada tramo exige equilibrar pesos, igual que tu torre de bloques.</p></div>
+  </div>
+</section>
+
+<section>
+  <h2>Reto de ingeniería: ¿vuelca la presa?</h2>
+  <p>Las presas y los muros de contención usan el mismo principio. El agua empuja y trata de girar el muro sobre su punta (el pie). El peso del muro, aplicado en su centro de gravedad, se opone. El ingeniero compara esos dos momentos.</p>
+  <div class='lab'>
+    <svg viewBox='0 0 600 300' role='img' aria-label='Sección de una presa con agua a un lado'>
+      <rect x='20' y='270' width='560' height='30' fill='var(--line)'/>
+      <line class='t' x1='20' y1='270' x2='580' y2='270'/>
+      <rect id='zD' y='270' height='10' fill='var(--good)'/>
+      <rect id='wtD' x='20' fill='var(--good)' fill-opacity='.35'/>
+      <rect id='fdD' x='20' width='560' fill='var(--good)' style='opacity:0;transition:opacity 1s .5s'/>
+      <g id='gwD'><rect id='wlD' fill='var(--line)' stroke='var(--ink)' stroke-width='3'/><circle id='cgD' class='cog' r='7'/></g>
+      <polygon id='prD' fill='var(--bad)' fill-opacity='.45' stroke='var(--bad)' stroke-width='2'/>
+      <line id='lgD' class='plumb'/>
+      <polygon id='rsD' fill='var(--ink)'/>
+      <path d='M380 270 l-8 -14 h16z' fill='var(--ink)'/>
+      <text class='txt' x='392' y='292'>pie (punto de giro)</text>
+      <text class='txt' x='30' y='296'>franja verde: tercio medio de la base</text>
+      <text class='txt' id='lbD' x='30'></text>
+    </svg>
+    <div class='ctl'><label for='hD'>Altura del agua</label><input id='hD' type='range' min='1' max='8' step='0.5' value='5'><output id='ohD'></output></div>
+    <div class='ctl'><label for='bD'>Ancho de la base</label><input id='bD' type='range' min='0.5' max='9' step='0.1' value='2'><output id='obD'></output></div>
+    <div class='row'><button class='btn' id='minD'>Usar el ancho mínimo (FS = 1,5)</button></div>
+    <div class='kpis' id='kD'></div>
+    <div class='eq' id='eqD'></div>
+    <div class='msg' id='mD' aria-live='polite'></div>
+  </div>
+  <div class='key'>Cálculo por cada metro de largo: el agua empuja con P = ½·γw·h² y esa fuerza actúa a h/3 del fondo, así que Mo = P·h/3. El peso W = γc·b·(h+1) actúa en el centro de gravedad, a b/2 del pie, así que Mr = W·b/2. El factor de seguridad es FS = Mr / Mo, y las normas suelen pedir al menos 1,5. Si FS ≥ 3, la resultante cae en el tercio medio de la base y no hay tracciones. Se usan γw = 9,81 kN/m³ y γc = 24 kN/m³, y se ignoran la subpresión y el deslizamiento.</div>
+</section>
+
+<section>
+  <h2>Pon a prueba lo aprendido</h2>
+  <div id="quiz"></div>
+  <div class="msg" id="score" style="display:none"></div>
+</section>
+
+<section>
+  <h2>Concreto armado: la receta y el hierro</h2>
+  <p>El concreto resiste muy bien la compresión, pero muy poco la tracción. El hierro (las varillas) es lo contrario: aguanta tracción enorme. Juntos forman el concreto armado, el material de casi todas las casas y puentes.</p>
+  <h2 style='font-size:1.4rem;margin-top:22px'>Preparar la mezcla</h2>
+  <div class='lab'>
+    <ol class='steps'><li>Mezcla en seco el cemento, la arena y la grava hasta que el color sea parejo.</li><li>Agrega el agua poco a poco, sin pasarte.</li><li>Vierte y compacta (vibra o golpea) para sacar las burbujas de aire.</li><li>Cura: mantén el concreto húmedo unos 7 días para que gane resistencia.</li></ol>
+    <div class='ctl'><label for='vE'>Cantidad de concreto</label><input id='vE' type='range' min='0.5' max='5' step='0.5' value='1'><output id='ovE'></output></div>
+    <div class='ctl'><label for='acE'>Agua / cemento</label><input id='acE' type='range' min='0.4' max='0.7' step='0.05' value='0.5'><output id='oacE'></output></div>
+    <div class='kpis' id='kE'></div>
+    <div class='msg' id='mE' aria-live='polite'></div>
+    <p style='margin:10px 0 0;font-size:.9rem;color:var(--muted)'>Valores aproximados para una mezcla de 1 : 2 : 3. El diseño real lo calcula un ingeniero según la obra.</p>
+  </div>
+
+  <h2 style='font-size:1.4rem;margin-top:30px'>¿Para qué sirve el hierro? Prueba una viga</h2>
+  <p>Una viga de 4 m, de 20 × 30 cm, apoyada en los extremos. Sube la carga en el centro. Abajo el concreto se estira (tracción) y arriba se aprieta (compresión).</p>
+  <div class='lab'>
+    <svg viewBox='0 0 600 230' role='img' aria-label='Viga de concreto con carga en el centro'>
+      <path d='M100 144 l-14 26 h28z M500 144 l-14 26 h28z' fill='var(--ink)'/>
+      <path id='bmE' class='bm' d='M100 100 L500 100 L500 144 L100 144Z'/>
+      <rect id='hl' class='bm' x='100' y='100' width='200' height='44' style='opacity:0'/><rect id='hr' class='bm' x='300' y='100' width='200' height='44' style='opacity:0'/>
+      <path id='rbE' fill='none' stroke='var(--ink)' stroke-width='6' stroke-linecap='round'/>
+      <g id='crE'><line class='rb' x1='265' y1='144' x2='268' y2='124'/><line class='rb' x1='300' y1='144' x2='300' y2='118'/><line class='rb' x1='335' y1='144' x2='332' y2='124'/></g>
+      <g id='ldE'><line class='t' x1='300' y1='50' x2='300' y2='94'/><path d='M292 86 l8 12 l8 -12z' fill='var(--ink)'/></g>
+      <text class='txt' x='110' y='92'>compresión arriba</text>
+      <text class='txt' x='110' y='196'>tracción abajo</text>
+      <text class='txt' x='320' y='62'>carga P</text>
+    </svg>
+    <div class='ctl'><label for='pE'>Carga en el centro</label><input id='pE' type='range' min='0' max='30' step='0.5' value='0'><output id='opE'></output></div>
+    <div class='row'><button class='btn' id='tgE'></button></div>
+    <div class='msg' id='mE2' aria-live='polite'></div>
+  </div>
+  <div class='key'>Cálculo: con carga P en el centro, el momento máximo es M = P·L/4 y el esfuerzo de tracción abajo es σ = 6M/(b·h²). El concreto de 21 MPa se agrieta a unos 2,8 MPa, lo que ocurre con P ≈ 8,5 kN. Con dos varillas de ½ pulgada (fy = 420 MPa) el hierro toma la tracción y la viga llega a P ≈ 26 kN, tres veces más, y avisa antes de fallar porque se deforma.</div>
+
+  <h2 style='font-size:1.4rem;margin-top:30px'>Una casa de ejemplo</h2>
+  <p>Toca cada parte de la casa y mira dónde va el hierro (líneas rojas).</p>
+  <div class='lab'>
+    <svg viewBox='0 0 600 290' role='img' aria-label='Casa con estructura de concreto armado'>
+      <rect x='20' y='252' width='560' height='30' fill='var(--line)'/><line class='t' x1='20' y1='252' x2='580' y2='252'/>
+      <polygon points='70,92 305,22 540,92' fill='var(--panel)' stroke='var(--ink)' stroke-width='3'/>
+      <rect class='part' data-k='muro' x='145' y='108' width='320' height='134'/>
+      <rect x='285' y='170' width='40' height='72' fill='var(--panel)' stroke='var(--ink)' stroke-width='2'/>
+      <rect x='175' y='140' width='60' height='45' fill='var(--panel)' stroke='var(--ink)' stroke-width='2'/><rect x='375' y='140' width='60' height='45' fill='var(--panel)' stroke='var(--ink)' stroke-width='2'/>
+      <rect class='part' data-k='col' x='115' y='108' width='30' height='134'/><rect class='part' data-k='col' x='465' y='108' width='30' height='134'/>
+      <rect class='part' data-k='viga' x='85' y='92' width='440' height='16'/>
+      <rect class='part' data-k='zap' x='95' y='240' width='70' height='14'/><rect class='part' data-k='zap' x='445' y='240' width='70' height='14'/>
+      <g id='rbH'></g>
+    </svg>
+    <div class='row' id='bH'></div>
+    <div class='msg' id='iH' aria-live='polite'></div>
+  </div>
+  <h2 style='font-size:1.4rem;margin-top:30px'>Pon a prueba tu casa</h2>
+  <p>Ahora la casa es tuya: cambia la ladera, el sismo, el tamaño y el hierro, y mira si se mantiene en pie. Hay dos formas de fallar: voltearse, si la plomada del centro de gravedad sale de la base, o derrumbarse, si las columnas no aguantan.</p>
+  <div class='lab'>
+    <svg viewBox='0 0 600 300' role='img' aria-label='Casa de concreto armado sobre un terreno inclinado con plomada'>
+      <g transform='translate(420 245)'>
+        <g id='slE'>
+          <rect x='-480' y='0' width='700' height='220' fill='var(--line)'/>
+          <line class='t' x1='-480' y1='0' x2='220' y2='0'/>
+          <g id='hsE'><g id='zpE'></g><g id='bdE'></g></g>
+        </g>
+      </g>
+      <line id='bsE' stroke='var(--good)' stroke-width='7' stroke-linecap='round'/>
+      <line id='plH' class='plumb'/><polygon id='bbH' fill='var(--ink)'/>
+      <line id='fsH' stroke='var(--ink)' stroke-width='4'/><polygon id='fhH' fill='var(--ink)'/>
+    </svg>
+    <div class='ctl'><label for='aH'>Pendiente del terreno</label><input id='aH' type='range' min='0' max='40' step='1' value='10'><output id='oaH'></output></div>
+    <div class='ctl'><label for='sH'>Sismo (aceleración)</label><input id='sH' type='range' min='0' max='0.6' step='0.02' value='0'><output id='osH'></output></div>
+    <div class='ctl'><label for='wH'>Ancho de la casa</label><input id='wH' type='range' min='3' max='10' step='0.5' value='6'><output id='owH'></output></div>
+    <div class='ctl'><label for='nH'>Número de pisos</label><input id='nH' type='range' min='1' max='3' step='1' value='2'><output id='onH'></output></div>
+    <div class='ctl'><label for='brH'>Hierro en columnas</label><input id='brH' type='range' min='0' max='3' step='1' value='2'><output id='obH'></output></div>
+    <div class='row'><button class='btn alt' id='rfH'></button><button class='btn alt' id='tkH'></button><button class='btn alt' id='plbH'></button></div>
+    <div class='kpis' id='kH'></div>
+    <div class='msg' id='mH' aria-live='polite'></div>
+  </div>
+  <p style='margin-top:12px'>Retos: 1) Con un sismo de 0,3 g, ¿cuánto hierro necesita una casa de 2 pisos? 2) ¿Puede el hierro evitar que una casa angosta y alta se vuelque? Pruébalo. El hierro evita el derrumbe, pero el vuelco depende del ancho y del centro de gravedad.</p>
+  <div class='key'>Después del terremoto de Popayán de 1983, Colombia creó su primer código de construcción sismo resistente (1984), que hoy es la NSR-10. El hierro bien colocado hace que una casa se deforme y avise antes de romperse, y esa diferencia protege vidas.</div>
+</section>
+
+<section>
+  <h2>Las ecuaciones detrás de todo</h2>
+  <p>Mueve los deslizadores y mira cómo cambian las ecuaciones. En cada paso, los números resaltados vienen de tus datos y el subrayado verde es el resultado. El caso: una casa de ancho w y altura h sobre un terreno con pendiente α, con un tanque de agua en el techo.</p>
+  <div class='lab'>
+    <svg viewBox='0 0 600 280' role='img' aria-label='Casa sobre una ladera con las distancias d e y del centro de gravedad'>
+      <g transform='translate(420 245)'>
+        <g id='slQ'>
+          <rect x='-480' y='0' width='700' height='200' fill='var(--line)'/>
+          <line class='t' x1='-480' y1='0' x2='220' y2='0'/>
+          <g id='hsQ'></g>
+        </g>
+      </g>
+      <line id='plQ' class='plumb'/><polygon id='bbQ' fill='var(--ink)'/>
+    </svg>
+    <div class='ctl'><label for='aQ'>Pendiente α</label><input id='aQ' type='range' min='0' max='45' step='1' value='12'><output id='oaQ'></output></div>
+    <div class='ctl'><label for='wQ'>Ancho w</label><input id='wQ' type='range' min='3' max='10' step='0.5' value='6'><output id='owQ'></output></div>
+    <div class='ctl'><label for='hQ'>Altura h</label><input id='hQ' type='range' min='3' max='12' step='0.5' value='7'><output id='ohQ'></output></div>
+    <div class='ctl'><label for='m1Q'>Masa de la casa m₁</label><input id='m1Q' type='range' min='5' max='60' step='1' value='30'><output id='om1Q'></output></div>
+    <div class='ctl'><label for='m2Q'>Masa del tanque m₂</label><input id='m2Q' type='range' min='0' max='10' step='0.5' value='4'><output id='om2Q'></output></div>
+    <div class='ctl'><label for='x2Q'>Posición del tanque x₂</label><input id='x2Q' type='range' min='0' max='6' step='0.1' value='5'><output id='ox2Q'></output></div>
+    <p style='margin:10px 0 0;font-size:.9rem;color:var(--muted)'>x₂ se mide desde el borde de arriba de la casa. La línea verde es d y la línea punteada es y.</p>
+  </div>
+  <div id='eqQ'></div>
+</section>
+</main>
+
+<script>
+const $=s=>document.querySelector(s);
+const NS='http://www.w3.org/2000/svg';
+
+/* Experimento 1 */
+let shape={w:60,h:140};
+function updA(){
+  const {w,h}=shape, th=+$('#angA').value;
+  const tc=Math.atan2(w,h)*180/Math.PI, fall=th>tc, te=fall?90:th, r=te*Math.PI/180;
+  const cx=-w/2*Math.cos(r)+h/2*Math.sin(r), cy=-w/2*Math.sin(r)-h/2*Math.cos(r);
+  const rc=$('#rA'); rc.setAttribute('x',-w);rc.setAttribute('y',-h);rc.setAttribute('width',w);rc.setAttribute('height',h);
+  rc.classList.toggle('bad',fall);
+  $('#boxA').style.transform=`translate(300px,250px) rotate(${te}deg)`;
+  const X=300+cx,Y=250+cy;
+  $('#cgA').setAttribute('cx',X);$('#cgA').setAttribute('cy',Y);
+  const l=$('#plA');l.setAttribute('x1',X);l.setAttribute('x2',X);l.setAttribute('y1',Y);l.setAttribute('y2',250);
+  const t=$('#tcg');t.setAttribute('x',Math.max(10,X-150));t.setAttribute('y',Math.max(18,Y-16));
+  $('#oA').textContent=th+'°';
+  const m=$('#mA');m.classList.toggle('bad',fall);
+  m.textContent=fall?'¡Se cae! La vertical del centro de gravedad quedó fuera del apoyo.':`Estable. Vuelca a partir de ${tc.toFixed(0)}°; te faltan ${(tc-th).toFixed(0)}° para el límite.`;
+}
+$('#angA').oninput=updA;
+$('#tall').onclick=()=>{shape={w:60,h:140};$('#tall').classList.remove('alt');$('#wide').classList.add('alt');updA()};
+$('#wide').onclick=()=>{shape={w:140,h:60};$('#wide').classList.remove('alt');$('#tall').classList.add('alt');updA()};
+
+/* Experimento 2 */
+const N=4,BW=100,BH=34,EDGE=250,TOP=250,EPS=0.011;
+const names=['abajo','segundo','tercero','arriba'];
+const sl=[];
+names.forEach((n,i)=>{
+  const d=document.createElement('div');d.className='ctl';
+  d.innerHTML=`<label for="b${i}">Bloque ${n}</label><input id="b${i}" type="range" min="-0.8" max="1.2" step="0.01" value="-0.3"><output></output>`;
+  $('#slB').appendChild(d);sl.push(d.querySelector('input'));
+});
+const rects=[];
+for(let i=0;i<N;i++){const r=document.createElementNS(NS,'rect');r.setAttribute('class','blk');r.setAttribute('width',BW);r.setAttribute('height',BH);r.setAttribute('y',TOP-BH*(i+1));$('#gB').appendChild(r);rects.push(r)}
+function updB(){
+  const c=sl.map(s=>+s.value);let fail=-1;
+  for(let i=0;i<N&&fail<0;i++){
+    const g=c.slice(i).reduce((a,b)=>a+b,0)/(N-i);
+    const ok=i===0?g<=EPS:Math.abs(g-c[i-1])<=0.5+EPS;
+    if(!ok)fail=i;
+  }
+  rects.forEach((r,i)=>{
+    const left=EDGE+(c[i]-.5)*BW;r.setAttribute('x',left);
+    const f=fail>=0&&i>=fail;r.classList.toggle('bad',f);
+    if(f){const k=i-fail,dx=Math.max(30,262+k*24-left),dy=310-(TOP-BH*i)-k*8,a=(k%2?-1:1)*(18+k*22);
+      r.style.transitionDelay=(k*70)+'ms';r.style.transform=`translate(${dx}px,${dy}px) rotate(${a}deg)`;}
+    else{r.style.transitionDelay='0ms';r.style.transform='';}
+  });
+  sl.forEach((s,i)=>s.nextElementSibling.textContent=c[i].toFixed(2));
+  const g0=c.reduce((a,b)=>a+b,0)/N,X=EDGE+g0*BW;
+  $('#cgB').setAttribute('cx',X);$('#cgB').setAttribute('cy',TOP-BH*N/2);
+  const l=$('#plB');l.setAttribute('x1',X);l.setAttribute('x2',X);l.setAttribute('y1',TOP-BH*N/2);l.setAttribute('y2',TOP);
+  const ov=Math.max(...c)+.5,m=$('#mB');m.classList.toggle('bad',fail>=0);
+  if(fail<0)m.textContent=`Torre estable. Sobresale ${Math.max(0,ov).toFixed(2)} anchos de bloque.${ov>1?' ¡Más de un bloque entero fuera de la mesa!':''}`;
+  else m.textContent=fail===0?'Cae: el centro de gravedad de toda la torre quedó fuera de la mesa.':`Cae: el centro de gravedad de los bloques de arriba salió del bloque ${names[fail-1]}.`;
+}
+sl.forEach(s=>s.oninput=updB);
+$('#rstB').onclick=()=>{sl.forEach(s=>s.value=-0.3);updB()};
+$('#bestB').onclick=()=>{[-0.375,-0.2083,0.0417,0.5417].forEach((v,i)=>sl[i].value=v);updB()};
+
+/* Experimento 3 */
+const M=2,L=100;
+function updC(){
+  const m=+$('#mC').value,f=+$('#fC').value,xc=m*50/(M+m);
+  const px=v=>300+v*4,fx=px(f),W=m*14;
+  const b=$('#brush');b.setAttribute('width',W);b.setAttribute('x',500-W/2);b.style.display=m>0?'':'none';
+  $('#cgC').setAttribute('cx',px(xc));
+  const d=xc-f,bal=Math.abs(d)<=1,ang=bal?0:Math.max(-22,Math.min(22,d*1.5));
+  const s=$('#stick');s.style.transformOrigin=`${fx}px 103px`;s.style.transition='transform .3s ease-out';s.style.transform=`rotate(${ang}deg)`;
+  $('#fulc').setAttribute('d',`M${fx} 110 l-16 90 h32z`);
+  $('#omC').textContent=m.toFixed(1)+' kg';$('#ofC').textContent=f.toFixed(1)+' cm';
+  const msg=$('#mC2');msg.classList.toggle('bad',!bal);
+  msg.textContent=bal?'¡Equilibrio! El apoyo está justo bajo el centro de gravedad (punto rojo).':`Se inclina hacia ${d>0?'el cepillo':'la izquierda'}. El centro de gravedad está a ${xc.toFixed(1)} cm del centro del palo.`;
+}
+$('#mC').oninput=updC;$('#fC').oninput=updC;
+$('#solC').onclick=()=>{const m=+$('#mC').value;$('#fC').value=Math.round(m*50/(M+m)*2)/2;updC()};
+
+/* Quiz */
+const Q=[
+ {q:'¿Cuándo vuelca un objeto apoyado?',o:['Cuando es muy pesado','Cuando la vertical del centro de gravedad cae fuera de la base de apoyo','Cuando es muy alto, siempre'],a:1,w:'Importa dónde cae la vertical, no el peso por sí solo.'},
+ {q:'¿Cómo hacer más estable un camión de carga?',o:['Poner la carga arriba','Bajar el centro de gravedad y ensanchar la base','Hacerlo más angosto'],a:1,w:'Más bajo y más ancho aleja el punto de vuelco.'},
+ {q:'Cuelgas un cepillo en un extremo de un palo de escoba. El centro de gravedad...',o:['Se queda en la mitad','Se corre hacia el cepillo','Se corre al extremo opuesto'],a:1,w:'El peso extra atrae el centro de gravedad hacia su lado.'}
+];
+let got=0,done=0;
+Q.forEach((it,qi)=>{
+  const d=document.createElement('div');d.className='q';
+  d.innerHTML=`<b>${it.q}</b>`;
+  it.o.forEach((t,oi)=>{
+    const b=document.createElement('button');b.className='opt';b.textContent=t;
+    b.onclick=()=>{
+      if(d.dataset.done)return;d.dataset.done=1;done++;
+      const ok=oi===it.a;if(ok)got++;
+      b.classList.add(ok?'ok':'no');
+      if(!ok)d.querySelectorAll('.opt')[it.a].classList.add('ok');
+      const p=document.createElement('p');p.style.marginTop='10px';p.textContent=(ok?'Correcto. ':'No exactamente. ')+it.w;d.appendChild(p);
+      if(done===Q.length){const s=$('#score');s.style.display='block';s.textContent=`Resultado: ${got} de ${Q.length}.`+(got===Q.length?' ¡Eres un ingeniero del equilibrio!':' Vuelve a los experimentos y prueba de nuevo.');}
+    };
+    d.appendChild(b);
+  });
+  $('#quiz').appendChild(d);
+});
+
+/* Reto: presa */
+const GW=9.81,GC=24,SD=22,TOE=380,GY=270,fm=(v,d=1)=>v.toFixed(d).replace('.',',');
+function updD(){
+  const h=+$('#hD').value,b=+$('#bD').value,H=h+1;
+  const W=GC*b*H,P=.5*GW*h*h,Mr=W*b/2,Mo=GW*h**3/6,FS=Mr/Mo,x=(Mr-Mo)/W,wl=TOE-b*SD;
+  const set=(id,o)=>{const e=$(id);for(const k in o)e.setAttribute(k,o[k])};
+  set('#wlD',{x:wl,y:GY-H*SD,width:b*SD,height:H*SD});
+  set('#wtD',{y:GY-h*SD,width:Math.max(0,wl-20),height:h*SD});
+  set('#prD',{points:`${wl},${GY-h*SD} ${wl},${GY} ${wl-h*SD*.45},${GY}`});
+  const cx=wl+b*SD/2;set('#cgD',{cx:cx,cy:GY-H*SD/2});set('#lgD',{x1:cx,x2:cx,y1:GY-H*SD/2,y2:GY});
+  set('#zD',{x:TOE-2*b*SD/3,width:b*SD/3});
+  const fall=FS<1,g=$('#gwD');g.style.transformOrigin=`${TOE}px ${GY}px`;g.style.transform=fall?'rotate(90deg)':'none';
+  ['#wtD','#prD','#lgD'].forEach(s=>$(s).style.opacity=fall?0:1);
+  set('#fdD',{y:GY-.22*h*SD,height:.22*h*SD});$('#fdD').style.opacity=fall?.4:0;
+  const xr=TOE-x*SD;set('#rsD',{points:`${xr},272 ${xr-7},288 ${xr+7},288`});
+  set('#lbD',{y:Math.max(16,GY-h*SD-8)});$('#lbD').textContent='agua: h = '+fm(h)+' m';
+  $('#ohD').textContent=fm(h)+' m';$('#obD').textContent=fm(b)+' m';
+  const k=[['Peso W',fm(W,0)+' kN/m'],['Empuje P',fm(P,0)+' kN/m'],['Mr (peso)',fm(Mr,0)+' kN·m/m'],['Mo (agua)',fm(Mo,0)+' kN·m/m'],['FS',fm(FS,2)],['Resultante',fm(x,2)+' m del pie']];
+  $('#kD').innerHTML=k.map(a=>`<div class='kpi'><small>${a[0]}</small><b>${a[1]}</b></div>`).join('');
+  $('#eqD').textContent=`FS = Mr / Mo = ${fm(Mr,0)} / ${fm(Mo,0)} = ${fm(FS,2)}`;
+  const m=$('#mD');let bad=true,t;
+  if(FS<1)t='Vuelca: el momento del agua supera al del peso. Ensancha la base.';
+  else if(FS<1.5)t='No vuelca, pero el margen es insuficiente. Se exige FS ≥ 1,5.';
+  else if(FS<3){bad=false;t='Cumple FS ≥ 1,5, pero la resultante sale del tercio medio y aparecen tracciones en la base.';}
+  else{bad=false;t='Excelente: FS ≥ 3 y la resultante cae en el tercio medio de la base.';}
+  m.classList.toggle('bad',bad);m.textContent=t;
+}
+$('#hD').oninput=updD;$('#bD').oninput=updD;
+$('#minD').onclick=()=>{const h=+$('#hD').value,bm=Math.sqrt(1.5*GW*h**3/(3*GC*(h+1)));$('#bD').value=Math.min(9,Math.ceil(bm*10)/10);updD()};
+
+/* Concreto */
+function updM(){
+  const V=+$('#vE').value,ac=+$('#acE').value,f=96/Math.pow(8,ac);
+  $('#ovE').textContent=fm(V)+' m³';$('#oacE').textContent=fm(ac,2);
+  const k=[['Cemento',Math.ceil(7*V)+' sacos (50 kg)'],['Arena',fm(.5*V,2)+' m³'],['Grava',fm(.8*V,2)+' m³'],['Agua',fm(350*ac*V,0)+' L'],['Resistencia',`≈ ${fm(f,0)} MPa`]];
+  $('#kE').innerHTML=k.map(a=>`<div class='kpi'><small>${a[0]}</small><b>${a[1]}</b></div>`).join('');
+  const m=$('#mE');m.classList.toggle('bad',ac>0.55);
+  m.textContent=ac<0.45?'Muy resistente, pero la mezcla queda dura y difícil de verter.':ac<=0.55?'Buen equilibrio entre resistencia y trabajabilidad.':'Más agua la hace fácil de verter, pero el concreto queda más débil y poroso.';
+}
+$('#vE').oninput=updM;$('#acE').oninput=updM;
+
+/* Viga con y sin hierro */
+const PCR=8.5,PU=26;let rebar=false;
+function updV(){
+  const P=+$('#pE').value,broken=!rebar&&P>PCR,over=rebar&&P>PU;
+  const sag=rebar?Math.min(P/PU,1.25)*22:Math.min(P/PCR,1)*3;
+  $('#opE').textContent=fm(P,1)+' kN';
+  const be=$('#bmE');be.setAttribute('d',`M100 100 Q300 ${100+2*sag} 500 100 L500 144 Q300 ${144+2*sag} 100 144Z`);
+  be.style.display=broken?'none':'';be.classList.toggle('bad',over);
+  const hl=$('#hl'),hr=$('#hr');hl.style.opacity=hr.style.opacity=broken?1:0;
+  hl.style.transformOrigin='100px 144px';hr.style.transformOrigin='500px 144px';
+  hl.style.transform=broken?'rotate(14deg)':'none';hr.style.transform=broken?'rotate(-14deg)':'none';
+  const rb=$('#rbE');rb.style.display=rebar?'':'none';rb.setAttribute('d',`M108 136 Q300 ${136+2*sag} 492 136`);
+  const cr=$('#crE');cr.style.display=(P>PCR&&!broken)?'':'none';cr.setAttribute('transform',`translate(0 ${sag})`);
+  $('#ldE').setAttribute('transform',`translate(0 ${sag})`);
+  $('#tgE').textContent=rebar?'Quitar el hierro':'Colocar el hierro';
+  const m=$('#mE2');m.classList.toggle('bad',broken||over);
+  m.textContent=broken?'¡Se rompió de golpe! El concreto casi no resiste tracción y la parte de abajo se abrió.'
+   :over?'Se acabó la reserva: el hierro fluye y la viga se deforma mucho. Avisa antes de caer.'
+   :rebar?(P>PCR?'Aparecen fisuras finas abajo, pero el hierro toma la tracción y la viga sigue firme (límite ≈ 26 kN).':'Con hierro: el concreto aún no se agrieta.')
+   :`Sin hierro: se rompe a ≈ ${fm(PCR,1)} kN. Faltan ${fm(PCR-P,1)} kN.`;
+}
+$('#pE').oninput=updV;$('#tgE').onclick=()=>{rebar=!rebar;updV()};
+
+/* Casa */
+const rbg=$('#rbH'),ln=(x1,y1,x2,y2)=>{const l=document.createElementNS(NS,'line');l.setAttribute('class','rb');l.setAttribute('x1',x1);l.setAttribute('y1',y1);l.setAttribute('x2',x2);l.setAttribute('y2',y2);rbg.appendChild(l)};
+[95,445].forEach(x=>{ln(x+4,249,x+66,249);ln(x+4,243,x+66,243)});
+[115,465].forEach(x=>{ln(x+6,96,x+6,248);ln(x+24,96,x+24,248);for(let y=118;y<240;y+=20)ln(x+4,y,x+26,y)});
+ln(90,95,520,95);ln(90,105,520,105);
+const PARTS={zap:['Zapata',`Reparte el peso de toda la casa sobre el suelo con una base ancha, el mismo principio de la presa. El hierro va abajo, en forma de parrilla, porque ahí el concreto se estira.`],col:['Columna',`Trabaja sobre todo a compresión. Lleva varillas verticales y estribos (los aros), que evitan que las varillas se pandeen y mantienen el concreto unido si hay un sismo.`],viga:['Viga y losa',`Se flexiona como tu viga de prueba: arriba se comprime y abajo se estira. Por eso el hierro principal va en la parte inferior, en el centro del tramo.`],muro:['Muro',`Es de ladrillo y queda confinado entre columnas y vigas (mampostería confinada). Sin ese marco de concreto armado, un sismo lo agrietaría y lo derribaría.`]};
+function pick(k){document.querySelectorAll('.part').forEach(e=>e.classList.toggle('sel',e.dataset.k===k));$('#iH').textContent=PARTS[k][0]+': '+PARTS[k][1];document.querySelectorAll('#bH .btn').forEach(b=>b.classList.toggle('alt',b.dataset.k!==k))}
+for(const k in PARTS){const b=document.createElement('button');b.className='btn alt';b.textContent=PARTS[k][0];b.dataset.k=k;b.onclick=()=>pick(k);$('#bH').appendChild(b)}
+document.querySelectorAll('.part').forEach(e=>e.onclick=()=>pick(e.dataset.k));
+pick('zap');
+
+/* Casa: vuelco, sismo y hierro */
+let roofH=false,tank=false,plum=true;
+const BARN=['sin hierro','3/8″ (delgado)','1/2″ (medio)','5/8″ (grueso)'],BARA=[0,71,127,199],BARW=[0,1.2,2,3.2];
+function updH(){
+  const al=+$('#aH').value,ag=+$('#sH').value,w=+$('#wH').value,n=+$('#nH').value,br=+$('#brH').value,S=15,Hh=3*S,W=w*S,cw=8;
+  const it=[];for(let i=1;i<=n;i++)it.push([1,-w/2,(i-.5)*3]);
+  it.push([roofH?1.8:.4,-w/2,3*n+.7]);it.push([1,-w/2,-.5]);if(tank)it.push([2,-.8,3*n+1.2]);
+  const M=it.reduce((a,p)=>a+p[0],0),xc=it.reduce((a,p)=>a+p[0]*p[1],0)/M,hc=it.reduce((a,p)=>a+p[0]*p[2],0)/M;
+  const r=al*Math.PI/180,co=Math.cos(r),si=Math.sin(r),xp=xc*co+hc*si,yh=hc*co-xc*si;
+  const tip=xp+ag*yh>0.001,aTip=Math.max(0,-xp/yh),crit=Math.atan2(-xc,hc)*180/Math.PI;
+  const cap=(0.08+0.0027*BARA[br])/(1+0.3*(n-1)),fail=ag>cap;
+  const st=`stroke='var(--ink)' stroke-width='2'`,fc=fail?'var(--bad)':'var(--line)';
+  let b='';
+  for(let i=0;i<n;i++){const y=-Hh*(i+1);
+    b+=`<rect x='${-W+cw}' y='${y}' width='${W-2*cw}' height='${Hh}' fill='var(--line)' ${st}/>`;
+    b+=i===0?`<rect x='${-W/2-7}' y='-30' width='14' height='30' fill='var(--panel)' ${st}/>`:`<rect x='${-W/2-7}' y='${y+14}' width='14' height='16' fill='var(--panel)' ${st}/>`;
+    b+=`<rect x='${-W}' y='${y}' width='${cw}' height='${Hh}' fill='${fc}' ${st}/><rect x='${-cw}' y='${y}' width='${cw}' height='${Hh}' fill='${fc}' ${st}/>`;
+    b+=`<rect x='${-W-3}' y='${y-4}' width='${W+6}' height='8' fill='var(--line)' ${st}/>`;}
+  b+=`<polygon points='${-W-8},${-Hh*n-4} ${-W/2},${-Hh*n-30} 8,${-Hh*n-4}' fill='${roofH?'var(--bad)':'var(--panel)'}' stroke='var(--ink)' stroke-width='2.5'/>`;
+  if(tank)b+=`<rect x='${-.8*S-12}' y='${-Hh*n-24}' width='24' height='20' fill='var(--good)' ${st}/>`;
+  let z=`<rect x='${-W-8}' y='0' width='24' height='7' fill='var(--line)' ${st}/><rect x='${-16}' y='0' width='24' height='7' fill='var(--line)' ${st}/>`;
+  if(br>0){const sw=BARW[br],ln=(x1,y1,x2,y2,k=1)=>`<line x1='${x1}' y1='${y1}' x2='${x2}' y2='${y2}' stroke='var(--bad)' stroke-width='${sw*k}'/>`;
+    [-W,-cw].forEach(x0=>{b+=ln(x0+2,-Hh*n,x0+2,0)+ln(x0+cw-2,-Hh*n,x0+cw-2,0);for(let y=-8;y>-Hh*n;y-=9)b+=ln(x0+1,y,x0+cw-1,y,.6)});
+    for(let i=0;i<n;i++){const y=-Hh*(i+1);b+=ln(-W,y-1.5,0,y-1.5)+ln(-W,y+1.5,0,y+1.5)}
+    z+=ln(-W-6,5,14-W,5)+ln(-14,5,6,5);}
+  b+=`<circle class='cog' r='7' cx='${xc*S}' cy='${-hc*S}'/>`;
+  $('#bdE').innerHTML=b;$('#zpE').innerHTML=z;
+  $('#hsE').style.transform=tip?'rotate(78deg)':'none';
+  $('#bdE').style.transform=fail?`translate(${W*.2}px,0px) skewX(-18deg) scaleY(.4)`:'none';
+  $('#slE').style.transform=`rotate(${al}deg)`;
+  const X=420+xp*S,Y=245+(xc*si-hc*co)*S,yg=245+(X-420)*Math.tan(r),on=plum&&!tip&&!fail;
+  const sa=(id,o)=>{const e=$(id);for(const k in o)e.setAttribute(k,o[k])};
+  sa('#plH',{x1:X,x2:X,y1:Y,y2:yg});$('#plH').style.opacity=on?1:0;
+  sa('#bbH',{points:`${X},${yg} ${X-6},${yg-14} ${X+6},${yg-14}`});$('#bbH').style.opacity=on?1:0;
+  sa('#bsE',{x1:420,y1:245,x2:420-W*co,y2:245-W*si});$('#bsE').style.opacity=tip?0:1;
+  const x2=X+ag*200;sa('#fsH',{x1:X,y1:Y,x2:x2,y2:Y});sa('#fhH',{points:`${x2+10},${Y} ${x2},${Y-6} ${x2},${Y+6}`});
+  $('#fsH').style.opacity=$('#fhH').style.opacity=ag>0?1:0;
+  $('#oaH').textContent=al+'°';$('#osH').textContent=fm(ag,2)+' g';$('#owH').textContent=fm(w)+' m';$('#onH').textContent=n;$('#obH').textContent=BARN[br];
+  $('#rfH').textContent='Techo: '+(roofH?'pesado (teja)':'liviano');$('#tkH').textContent='Tanque de agua: '+(tank?'sí, cuesta abajo':'no');$('#plbH').textContent='Plomada: '+(plum?'puesta':'quitada');
+  const k=[['Altura del centro de gravedad',fm(hc,1)+' m'],['Pendiente de vuelco',fm(crit,0)+'°'],['Sismo que la voltea',fm(aTip,2)+' g'],['Sismo que la derrumba',fm(cap,2)+' g']];
+  $('#kH').innerHTML=k.map(a=>`<div class='kpi'><small>${a[0]}</small><b>${a[1]}</b></div>`).join('');
+  const near=!tip&&!fail&&(aTip-ag<0.05||cap-ag<0.05),m=$('#mH');m.classList.toggle('bad',tip||fail||near);
+  m.textContent=tip&&fail?'¡Vuelca y además la estructura no aguanta!'
+   :tip?(ag>0?`¡Vuelca! Con ${fm(ag,2)} g la plomada del centro de gravedad sale de la base. Desde ${fm(aTip,2)} g ya vuelca.`:'¡Vuelca! La plomada del centro de gravedad cae fuera de la base, cuesta abajo.')
+   :fail?(br===0?'¡Se derrumba! Sin hierro, el concreto se rompe a tracción apenas las columnas se flexionan.':`¡Se derrumba! El sismo (${fm(ag,2)} g) supera lo que resiste la estructura (${fm(cap,2)} g). Prueba con hierro más grueso.`)
+   :near?'Está al borde: un cambio pequeño la hace fallar.':'Estable: la plomada cae dentro de la base y las columnas aguantan.';
+}
+['aH','sH','wH','nH','brH'].forEach(i=>$('#'+i).oninput=updH);
+$('#rfH').onclick=()=>{roofH=!roofH;updH()};$('#tkH').onclick=()=>{tank=!tank;updH()};$('#plbH').onclick=()=>{plum=!plum;updH()};
+
+/* Ecuaciones paso a paso */
+const gR=9.8,V=(v,d=2)=>`<span class='v'>${fm(v,d)}</span>`,R=(v,u,d=2)=>`<b class='res'>${fm(v,d)} ${u}</b>`;
+const stp=(t,p,f)=>`<div class='st'><h3>${t}</h3><p>${p}</p>${f.map(x=>`<div class='fx'>${x}</div>`).join('')}</div>`;
+function updQ(){
+  const al=+$('#aQ').value,w=+$('#wQ').value,h=+$('#hQ').value,m1=+$('#m1Q').value,m2=+$('#m2Q').value,xs=$('#x2Q');
+  xs.max=w;if(+xs.value>w)xs.value=w;const x2=+xs.value;
+  const W1=m1*gR,W2=m2*gR,W=W1+W2,x1=w/2,y1=h/2,y2=h,S=14;
+  const xc=(W1*x1+W2*x2)/W,yc=(W1*y1+W2*y2)/W,d=w-xc,tc=Math.atan2(d,yc)*180/Math.PI;
+  const r=al*Math.PI/180,co=Math.cos(r),si=Math.sin(r),te=W*co*d,tv=W*si*yc,tau=te-tv,tip=al>tc,xl=(xc-w)*S;
+  let g=`<rect x='${-w*S}' y='${-h*S}' width='${w*S}' height='${h*S}' fill='var(--line)' stroke='var(--ink)' stroke-width='3'/>`;
+  if(m2>0)g+=`<rect x='${(x2-w)*S-10}' y='${-h*S-16}' width='20' height='16' fill='var(--good)' stroke='var(--ink)' stroke-width='2'/>`;
+  g+=`<line x1='${xl}' y1='0' x2='0' y2='0' stroke='var(--good)' stroke-width='6'/><line x1='${xl}' y1='0' x2='${xl}' y2='${-yc*S}' stroke='var(--ink)' stroke-width='3' stroke-dasharray='4 3'/>`;
+  g+=`<text class='txt' x='${xl/2-4}' y='20'>d</text><text class='txt' x='${xl+8}' y='${-yc*S/2}'>y</text><circle class='cog' r='7' cx='${xl}' cy='${-yc*S}'/>`;
+  $('#hsQ').innerHTML=g;$('#hsQ').style.transform=tip?'rotate(78deg)':'none';$('#slQ').style.transform=`rotate(${al}deg)`;
+  const xp=(xc-w)*co+yc*si,X=420+xp*S,Y=245+((xc-w)*si-yc*co)*S,yg=245+(X-420)*Math.tan(r),sa=(id,o)=>{const e=$(id);for(const k in o)e.setAttribute(k,o[k])};
+  sa('#plQ',{x1:X,x2:X,y1:Y,y2:yg});sa('#bbQ',{points:`${X},${yg} ${X-6},${yg-14} ${X+6},${yg-14}`});
+  $('#plQ').style.opacity=$('#bbQ').style.opacity=tip?0:1;
+  $('#oaQ').textContent=al+'°';$('#owQ').textContent=fm(w)+' m';$('#ohQ').textContent=fm(h)+' m';$('#om1Q').textContent=fm(m1,0)+' t';$('#om2Q').textContent=fm(m2)+' t';$('#ox2Q').textContent=fm(x2)+' m';
+  const fs=tv>0?fm(te/tv,2):'∞';
+  $('#eqQ').innerHTML=
+   stp('Paso 1: los pesos','El peso es masa × gravedad (g = 9,8 m/s²). Con la masa en toneladas, el peso sale en kN.',[
+    `W<sub>1</sub> = m<sub>1</sub>·g = ${V(m1,1)} × 9,8 = ${R(W1,'kN',1)} (la casa)`,
+    `W<sub>2</sub> = m<sub>2</sub>·g = ${V(m2,1)} × 9,8 = ${R(W2,'kN',1)} (el tanque)`,
+    `W = W<sub>1</sub> + W<sub>2</sub> = ${V(W1,1)} + ${V(W2,1)} = ${R(W,'kN',1)}`])+
+   stp('Paso 2: centro de gravedad, posición horizontal','Es un promedio donde pesa más lo más pesado. La casa pesa en su centro, así que x₁ = w/2.',[
+    `x<sub>cg</sub> = (W<sub>1</sub>·x<sub>1</sub> + W<sub>2</sub>·x<sub>2</sub>) / W`,
+    `x<sub>cg</sub> = (${V(W1,1)} × ${V(x1)} + ${V(W2,1)} × ${V(x2)}) / ${V(W,1)} = ${R(xc,'m')}`])+
+   stp('Paso 3: centro de gravedad, altura','Mismo promedio, pero con las alturas: la casa pesa a la mitad (y₁ = h/2) y el tanque está en el techo (y₂ = h).',[
+    `y<sub>cg</sub> = (W<sub>1</sub>·y<sub>1</sub> + W<sub>2</sub>·y<sub>2</sub>) / W`,
+    `y<sub>cg</sub> = (${V(W1,1)} × ${V(y1)} + ${V(W2,1)} × ${V(y2)}) / ${V(W,1)} = ${R(yc,'m')}`])+
+   stp('Paso 4: distancia al pie','El pie es el borde de abajo de la ladera, el punto sobre el que giraría la casa al volcar.',[
+    `d = w − x<sub>cg</sub> = ${V(w)} − ${V(xc)} = ${R(d,'m')}`])+
+   stp('Paso 5: ángulo de vuelco','La casa vuelca cuando la plomada del centro de gravedad llega al pie. Eso pasa cuando tan θ = d / y.',[
+    `θ<sub>c</sub> = arctan(d / y<sub>cg</sub>) = arctan(${V(d)} / ${V(yc)}) = ${R(tc,'°',1)}`])+
+   stp(`Paso 6: torques respecto al pie, con α = ${al}°`,'La parte del peso perpendicular a la ladera (W·cos α) tiene brazo d y mantiene la casa en pie. La parte paralela (W·sen α) tiene brazo y y la hace girar cuesta abajo.',[
+    `τ<sub>estabiliza</sub> = W·cos α·d = ${V(W,1)} × ${V(co,3)} × ${V(d)} = ${R(te,'kN·m',0)}`,
+    `τ<sub>vuelca</sub> = W·sen α·y<sub>cg</sub> = ${V(W,1)} × ${V(si,3)} × ${V(yc)} = ${R(tv,'kN·m',0)}`,
+    `τ = τ<sub>estabiliza</sub> − τ<sub>vuelca</sub> = ${V(te,0)} − ${V(tv,0)} = ${R(tau,'kN·m',0)}`])+
+   stp('Paso 7: conclusión','Si τ es positivo, gana el torque que mantiene la casa en pie. El factor de seguridad compara los dos torques.',[
+    `FS = τ<sub>estabiliza</sub> / τ<sub>vuelca</sub> = ${V(te,0)} / ${V(tv,0)} = <b class='res'>${fs}</b>`])+
+   `<div class='msg${tip?' bad':''}'>${tip?`Como τ < 0 (α = ${al}° es mayor que θc = ${fm(tc,1)}°), la casa vuelca.`:`Como τ > 0 (α = ${al}° es menor que θc = ${fm(tc,1)}°), la casa es estable. Te quedan ${fm(tc-al,1)}° de margen.`}</div>`;
+}
+['aQ','wQ','hQ','m1Q','m2Q','x2Q'].forEach(i=>$('#'+i).oninput=updQ);
+
+updA();updB();updC();updD();updM();updV();updH();updQ();
+</script>
+</body>
+</html>
