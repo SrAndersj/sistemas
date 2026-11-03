@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Test de Genética y Cuadros de Punnett · Grado 8</title>
+<style>
+:root{--bg:#f3f7ee;--card:#fff;--ink:#1f2d24;--mute:#5d6e62;--line:#d5e0cf;--g:#2f7d4f;--gl:#dff1e5;--r:#b3402f;--rl:#fbe4df;--a:#7a4fb5;--al:#ece3f8;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15201a;--card:#1e2c24;--ink:#e8f1ea;--mute:#a1b5a7;--line:#33473b;--g:#6cc592;--gl:#1f3b2b;--r:#ee8b7a;--rl:#432421;--a:#b99be6;--al:#2f2644}}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.55 Georgia,"Times New Roman",serif}
+main{max-width:720px;margin:0 auto;padding:20px 16px 60px}
+h1{font-size:1.3rem;line-height:1.2;margin:.2em 0 .6em}
+h2{font-size:1.15rem;margin:0 0 .6em;line-height:1.35}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;margin:16px 0}
+button{font:inherit;cursor:pointer}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid var(--a);outline-offset:2px}
+.btn{background:var(--g);color:#fff;border:0;border-radius:10px;padding:11px 20px;font-weight:bold}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn{color:#10201a}}
+.bar{height:10px;background:var(--line);border-radius:6px;overflow:hidden;margin:8px 0 0}
+.bar i{display:block;height:100%;background:var(--g);width:0;transition:width .4s}
+.meta{display:flex;justify-content:space-between;color:var(--mute);font-size:.95rem}
+.opt{display:block;width:100%;text-align:left;background:var(--bg);color:var(--ink);border:2px solid var(--line);border-radius:10px;padding:12px 14px;margin:8px 0}
+.opt:hover:not(:disabled){border-color:var(--a)}
+.ok{background:var(--gl)!important;border-color:var(--g)!important}
+.bad{background:var(--rl)!important;border-color:var(--r)!important}
+.opt:disabled{cursor:default}
+.fb{margin-top:14px;padding:14px;border-radius:10px;display:none}
+.fb.ok{display:block;border-left:6px solid var(--g)}
+.fb.bad{display:block;border-left:6px solid var(--r)}
+table.p{border-collapse:collapse;margin:12px auto;text-align:center}
+table.p td,table.p th{border:2px solid var(--line);min-width:62px;height:52px;padding:2px}
+table.p th{background:var(--al);color:var(--a);font-size:1.05rem}
+table.p td{background:var(--bg)}
+table.p select,table.p input{font:inherit;font-weight:bold;width:64px;height:40px;text-align:center;border:2px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);padding:0}
+table.p td.ok,table.p td.bad{border-width:2px}
+.fix{display:block;font-size:.75rem;color:var(--r);line-height:1}
+.ctx{background:var(--al);border-radius:10px;padding:10px 14px;margin:0 0 12px;font-size:.97rem}
+.tag{display:inline-block;background:var(--al);color:var(--a);border-radius:20px;padding:2px 12px;font-size:.85rem;margin-bottom:8px}
+.fu{margin:10px 0}
+.fu input{font:inherit;width:84px;padding:6px;border:2px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);text-align:center}
+.gm label{display:inline-block;background:var(--bg);border:2px solid var(--line);border-radius:10px;padding:8px 16px;margin:4px;cursor:pointer;font-weight:bold}
+.gm input{margin-right:6px}
+.big{font-size:3rem;font-weight:bold;color:var(--g);margin:0;line-height:1}
+.hide{display:none}
+</style>
+</head>
+<body>
+<main>
+<section id="quiz">
+  <h1>Test de genética y cuadros de Punnett · Grado 8</h1>
+  <div class="meta"><span id="num"></span><span id="sc"></span></div>
+  <div class="bar"><i id="pb"></i></div>
+  <div class="card">
+    <span class="tag" id="tag"></span>
+    <div id="ctx"></div>
+    <h2 id="q"></h2>
+    <div id="body"></div>
+    <p style="margin:14px 0 0"><button class="btn hide" id="check">Comprobar</button></p>
+    <div id="fb" class="fb" role="status" aria-live="polite"></div>
+    <p style="margin:16px 0 0"><button class="btn hide" id="next">Siguiente pregunta</button></p>
+  </div>
+</section>
+<section id="end" class="card hide">
+  <h1>Tu resultado</h1>
+  <p class="big" id="endn"></p>
+  <p id="endm"></p>
+  <h2 style="margin-top:18px">Temas para repasar</h2>
+  <ul id="rev"></ul>
+  <button class="btn" id="again">Intentar de nuevo</button>
+</section>
+</main>
+<script>
+var $=function(id){return document.getElementById(id)};
+function norm(p){p=p.replace(/\s/g,'');var o='';for(var i=0;i<p.length;i+=2){var a=p[i],b=p[i+1]||'';
+ if(b&&a!==a.toUpperCase()&&b!==b.toLowerCase()){var t=a;a=b;b=t}o+=a+b}return o}
+function cell(r,c){var s='';for(var i=0;i<r.length;i++)s+=norm(r[i]+c[i]);return s}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+
+function staticTable(rows,cols){var h='<table class="p"><tr><th></th>';
+ cols.forEach(function(c){h+='<th>'+c+'</th>'});h+='</tr>';
+ rows.forEach(function(r){h+='<tr><th>'+r+'</th>';cols.forEach(function(c){h+='<td><b>'+cell(r,c)+'</b></td>'});h+='</tr>'});
+ return h+'</table>'}
+
+var Q=[
+{t:'Vocabulario',type:'mc',q:'Una planta tiene genotipo Pp. ¿Cómo se llama este genotipo?',o:['Homocigoto dominante','Homocigoto recesivo','Heterocigoto','Fenotipo'],a:2,
+ e:'Heterocigoto: los dos alelos son distintos. Homocigoto es cuando son iguales (PP o pp).'},
+{t:'Completa el cuadro',type:'fill',ctx:'En los guisantes, <b>A</b> = semilla lisa (dominante) y <b>a</b> = rugosa (recesiva). Cruce: <b>Aa × Aa</b>.',
+ rows:['A','a'],cols:['A','a'],
+ fu:[{q:'¿Qué % de los hijos tendrá semilla lisa?',a:75},{q:'¿Qué % será homocigoto recesivo (aa)?',a:25}],
+ e:'Casillas: AA, Aa, Aa, aa. AA y Aa son lisas (3 de 4 = 75 %). Solo aa es rugosa (1 de 4 = 25 %).'},
+{t:'Completa el cuadro',type:'fill',ctx:'<b>B</b> = ojos oscuros (dominante), <b>b</b> = ojos claros. Cruce de prueba: <b>Bb × bb</b>. Escribe el genotipo con la letra mayúscula primero (Bb).',
+ rows:['B','b'],cols:['b','b'],
+ fu:[{q:'¿Qué % de los hijos tendrá ojos claros?',a:50}],
+ e:'Las casillas son Bb, Bb, bb, bb. La mitad (50 %) es bb y tiene ojos claros.'},
+{t:'Gametos',type:'gam',q:'Un individuo tiene genotipo AaBb. Marca TODOS los gametos que puede formar.',
+ opts:['AB','Ab','aB','ab','Aa','Bb'],ans:['AB','Ab','aB','ab'],
+ e:'Cada gameto lleva un solo alelo de cada gen: uno de A/a y uno de B/b. Eso da 4 combinaciones: AB, Ab, aB y ab. Aa y Bb no sirven porque tienen los dos alelos del mismo gen.'},
+{t:'Completa el cuadro',type:'fill',ctx:'<b>R</b> = semilla redonda (dominante), <b>r</b> = rugosa. Cruce: <b>Rr × Rr</b>.',
+ rows:['R','r'],cols:['R','r'],
+ fu:[{q:'Si nacen 80 plantas, ¿cuántas se esperan rugosas?',a:20},{q:'¿Cuántas se esperan heterocigotas (Rr)?',a:40}],
+ e:'La proporción es 1 RR : 2 Rr : 1 rr. De 80 plantas: 1/4 son rr = 20 y 2/4 son Rr = 40.'},
+{t:'Deduce los padres',type:'mc',ctx:'La mitad de los hijos son <b>Pp</b> (flor morada) y la otra mitad <b>pp</b> (flor blanca). Uno de los padres es <b>pp</b>.',
+ q:'¿Cuál es el genotipo del otro padre?',o:['PP','Pp','pp','No se puede saber'],a:1,
+ e:'Con PP × pp todos serían Pp. Con pp × pp todos serían pp. Solo Pp × pp da 50 % Pp y 50 % pp.'},
+{t:'Dominancia incompleta',type:'mc',ctx:'En la flor «dondiego de noche», el alelo rojo (R) y el blanco (B) se mezclan: RB es <b>rosada</b>. Se cruzan dos plantas rosadas (RB × RB).',
+ q:'¿Qué proporción de fenotipos se espera?',o:['3 rojas : 1 blanca','1 roja : 2 rosadas : 1 blanca','Todas rosadas','1 roja : 1 blanca'],a:1,
+ e:'Cuadro: RR, RB, RB, BB. Como RB se ve rosada, resulta 1 roja : 2 rosadas : 1 blanca. Aquí la proporción fenotípica coincide con la genotípica.'},
+{t:'Completa el cuadro (difícil)',type:'fill',ctx:'Dos genes: <b>A</b> = liso, <b>a</b> = rugoso; <b>B</b> = amarillo, <b>b</b> = verde. Cruce de dihíbridos <b>AaBb × AaBb</b>. Escribe 4 letras por casilla (ej.: AaBb).',
+ rows:['AB','Ab','aB','ab'],cols:['AB','Ab','aB','ab'],
+ fu:[{q:'¿Cuántas de las 16 casillas son aabb (rugoso y verde)?',a:1},{q:'¿Cuántas casillas muestran los dos rasgos dominantes (liso y amarillo)?',a:9}],
+ e:'La proporción fenotípica clásica de Mendel es 9 : 3 : 3 : 1. Hay 9 lisos-amarillos, 3 lisos-verdes, 3 rugosos-amarillos y 1 rugoso-verde (aabb).'},
+{t:'Probabilidad',type:'mc',q:'Dos padres Aa tienen dos hijos. ¿Cuál es la probabilidad de que AMBOS sean aa?',o:['1/2','1/4','1/8','1/16'],a:3,
+ e:'Cada hijo tiene 1/4 de probabilidad de ser aa. Los hijos son sucesos independientes: 1/4 × 1/4 = 1/16.'}
+];
+
+var idx,score,wrong,cur;
+function start(){idx=0;score=0;wrong={};$('end').classList.add('hide');$('quiz').classList.remove('hide');show()}
+function show(){
+ cur=Q[idx];
+ $('num').textContent='Pregunta '+(idx+1)+' de '+Q.length;
+ $('sc').textContent='Aciertos: '+score;
+ $('pb').style.width=(idx/Q.length*100)+'%';
+ $('tag').textContent=cur.t;
+ $('ctx').innerHTML=cur.ctx&&cur.type!=='fill'?'<div class="ctx">'+cur.ctx+'</div>':'';
+ $('q').innerHTML=cur.type==='fill'?'<span style="font-weight:normal">'+cur.ctx+'</span>':cur.q;
+ $('fb').className='fb';$('fb').innerHTML='';
+ $('next').classList.add('hide');
+ var b=$('body');b.innerHTML='';var chk=$('check');chk.classList.add('hide');chk.disabled=false;
+ if(cur.type==='mc'){
+  shuffle(cur.o.map(function(t,i){return{t:t,i:i}})).forEach(function(o){
+   var x=document.createElement('button');x.className='opt';x.type='button';x.dataset.i=o.i;x.textContent=o.t;
+   x.onclick=function(){ansMC(+x.dataset.i)};b.appendChild(x)});
+ }else if(cur.type==='gam'){
+  var d='<div class="gm">';cur.opts.forEach(function(o){d+='<label><input type="checkbox" value="'+o+'">'+o+'</label>'});
+  b.innerHTML=d+'</div>';chk.classList.remove('hide');chk.onclick=ansGam;
+ }else{
+  var big=cur.rows[0].length>1,h='<p style="margin:0 0 4px"><b>Completa el cuadro de Punnett:</b></p><table class="p"><tr><th></th>';
+  cur.cols.forEach(function(c){h+='<th>'+c+'</th>'});h+='</tr>';
+  cur.rows.forEach(function(r,i){h+='<tr><th>'+r+'</th>';cur.cols.forEach(function(c,j){
+   h+='<td data-i="'+i+'" data-j="'+j+'">';
+   if(big)h+='<input type="text" maxlength="4" autocomplete="off" aria-label="fila '+r+' columna '+c+'">';
+   else{var L=cur.rows[0].toUpperCase(),l=L.toLowerCase();
+    h+='<select aria-label="fila '+r+' columna '+c+'"><option value="">?</option><option>'+L+L+'</option><option>'+L+l+'</option><option>'+l+l+'</option></select>'}
+   h+='</td>'});h+='</tr>'});
+  h+='</table>';
+  cur.fu.forEach(function(f,k){h+='<div class="fu"><span>'+f.q+'</span> <input type="number" inputmode="numeric" data-k="'+k+'">'+(f.a>=0&&/%/.test(f.q)?' %':'')+'</div>'});
+  b.innerHTML=h;chk.classList.remove('hide');chk.onclick=ansFill;
+ }
+}
+function done(right,html){
+ if(right)score++;else wrong[cur.t]=(wrong[cur.t]||0)+1;
+ $('sc').textContent='Aciertos: '+score;
+ var fb=$('fb');fb.className='fb '+(right?'ok':'bad');fb.innerHTML=html+'<br>'+cur.e;
+ $('check').classList.add('hide');
+ var n=$('next');n.classList.remove('hide');n.textContent=idx===Q.length-1?'Ver mi resultado':'Siguiente pregunta';n.focus();
+}
+function ansMC(i){
+ var bs=$('body').children;
+ for(var k=0;k<bs.length;k++){var v=+bs[k].dataset.i;bs[k].disabled=true;if(v===cur.a)bs[k].classList.add('ok');else if(v===i)bs[k].classList.add('bad')}
+ var r=i===cur.a;
+ done(r,'<b>'+(r?'¡Correcto!':'Todavía no.')+'</b> '+(r?'':'La respuesta correcta es: <b>'+cur.o[cur.a]+'</b>.'));
+}
+function ansGam(){
+ var ch=[].slice.call($('body').querySelectorAll('input')),ok=true;
+ ch.forEach(function(c){var should=cur.ans.indexOf(c.value)>-1;if(c.checked!==should)ok=false;
+  c.parentNode.classList.add(should?'ok':(c.checked?'bad':'x'));c.disabled=true});
+ done(ok,'<b>'+(ok?'¡Correcto!':'Todavía no.')+'</b> '+(ok?'':'Los gametos correctos son: <b>'+cur.ans.join(', ')+'</b>.'));
+}
+function ansFill(){
+ var all=true,cellsBad=0,fuBad=0;
+ [].forEach.call($('body').querySelectorAll('td[data-i]'),function(td){
+  var el=td.firstChild,exp=cell(cur.rows[+td.dataset.i],cur.cols[+td.dataset.j]),val=norm(el.value||'');
+  var ok=val===exp;td.classList.add(ok?'ok':'bad');
+  if(!ok){cellsBad++;td.insertAdjacentHTML('beforeend','<span class="fix">'+exp+'</span>')}
+  el.disabled=true});
+ [].forEach.call($('body').querySelectorAll('.fu input'),function(inp){
+  var f=cur.fu[+inp.dataset.k],ok=inp.value!==''&&+inp.value===f.a;
+  inp.classList.add(ok?'ok':'bad');inp.disabled=true;
+  if(!ok){fuBad++;inp.insertAdjacentHTML('afterend',' <b class="fix" style="display:inline;font-size:.9rem">= '+f.a+'</b>')}});
+ var right=!cellsBad&&!fuBad;
+ var msg=right?'<b>¡Correcto!</b> Cuadro y respuestas perfectos.':'<b>Revisa:</b> '+(cellsBad?cellsBad+' casilla(s) del cuadro incorrecta(s) (en rojo, con la respuesta correcta). ':'')+(fuBad?fuBad+' respuesta(s) numérica(s) incorrecta(s).':'');
+ done(right,msg);
+}
+function finish(){
+ $('quiz').classList.add('hide');$('end').classList.remove('hide');
+ var pct=Math.round(score/Q.length*100);
+ $('endn').textContent=score+' / '+Q.length+' ('+pct+' %)';
+ $('endm').textContent=pct>=90?'Excelente: dominas los cuadros de Punnett.':pct>=70?'Muy bien: repasa los temas marcados.':pct>=50?'Vas bien. Repasa y vuelve a intentarlo.':'Necesitas repasar: practica llenando cuadros de Punnett.';
+ var r=$('rev');r.innerHTML='';var ks=Object.keys(wrong);
+ if(!ks.length)r.innerHTML='<li>¡No fallaste ninguna pregunta!</li>';
+ ks.forEach(function(k){var li=document.createElement('li');li.textContent=k+' (fallaste '+wrong[k]+')';r.appendChild(li)});
+}
+$('next').onclick=function(){idx++;if(idx>=Q.length)finish();else show()};
+$('again').onclick=start;
+start();
+</script>
+</body>
+</html>
