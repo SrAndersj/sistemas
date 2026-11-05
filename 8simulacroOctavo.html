@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Test de Ciencias Naturales · Octavo</title>
+<style>
+:root{--bg:#f6f8fa;--card:#fff;--tx:#1b2733;--mu:#5b6b7a;--pr:#1f6f8b;--bd:#d6dee6;--ok:#1a7f4b;--okb:#e3f5ea;--no:#c0392b;--nob:#fdeaea;--in:#eef6fa;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);box-sizing:border-box}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12181e;--card:#1b242d;--tx:#e8eef3;--mu:#9fb0bf;--pr:#5bb5d3;--bd:#2f3d4a;--ok:#5fd394;--okb:#143324;--no:#ff8a7a;--nob:#3a1b18;--in:#1a2b36;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#12181e;--card:#1b242d;--tx:#e8eef3;--mu:#9fb0bf;--pr:#5bb5d3;--bd:#2f3d4a;--ok:#5fd394;--okb:#143324;--no:#ff8a7a;--nob:#3a1b18;--in:#1a2b36;color-scheme:dark}
+html{scroll-padding-top:70px}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:760px;margin:0 auto;padding:0 14px 60px}
+header{position:sticky;top:env(safe-area-inset-top,0px);background:var(--bg);padding:10px 0;z-index:5;border-bottom:1px solid var(--bd)}
+h1{font-size:1.15rem;margin:0 0 6px;color:var(--pr)}
+.bar{height:8px;background:var(--bd);border-radius:6px;overflow:hidden}.bar i{display:block;height:100%;width:0;background:var(--pr);transition:width .3s}
+.st{font-size:.85rem;color:var(--mu);margin-top:4px}
+h2{background:var(--pr);color:#fff;padding:8px 12px;border-radius:8px;font-size:1.05rem;margin:28px 0 10px}
+.intro{color:var(--mu);font-size:.95rem;margin:0 0 10px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px;margin:12px 0}
+.card.ok{border-color:var(--ok)}.card.no{border-color:var(--no)}
+.q{margin:0 0 10px;font-weight:600}.q b{color:var(--pr)}
+.opt{display:block;width:100%;text-align:left;background:var(--in);color:var(--tx);border:1px solid var(--bd);border-radius:8px;padding:9px 11px;margin:6px 0;font:inherit;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--pr)}
+.opt.c{background:var(--okb);border-color:var(--ok)}.opt.w{background:var(--nob);border-color:var(--no)}
+.f{display:flex;gap:8px;align-items:center;margin:6px 0;flex-wrap:wrap}.f label{font-size:.9rem;color:var(--mu);min-width:90px}
+input,select,textarea{font:inherit;color:var(--tx);background:var(--in);border:1px solid var(--bd);border-radius:8px;padding:7px 9px;max-width:100%;box-sizing:border-box}
+input{flex:1;min-width:120px}textarea{width:100%;min-height:70px}
+input.c,select.c{border-color:var(--ok);background:var(--okb)}input.w,select.w{border-color:var(--no);background:var(--nob)}
+.btn{background:var(--pr);color:#fff;border:0;border-radius:8px;padding:8px 14px;font:inherit;font-weight:600;cursor:pointer;margin-top:6px}
+.btn:disabled{opacity:.5}.btn.g{background:transparent;color:var(--pr);border:1px solid var(--pr)}
+.fb{margin-top:10px;padding:10px 12px;border-radius:8px;font-size:.95rem;display:none}
+.fb.ok{background:var(--okb);color:var(--ok);display:block}.fb.no{background:var(--nob);color:var(--no);display:block}.fb.md{background:var(--in);color:var(--tx);display:block;border:1px dashed var(--pr)}
+.fb span{color:var(--tx)}
+svg{width:100%;max-width:340px;height:auto;display:block;margin:6px auto;background:var(--card)}
+svg text{fill:var(--mu);font-size:10px}.ax{stroke:var(--mu)}.gr{stroke:var(--bd)}
+#res{display:none;text-align:center}#res .n{font-size:2.2rem;font-weight:700;color:var(--pr)}
+</style></head><body><main>
+<header><h1>🔬 Test de Ciencias Naturales · Grado Octavo</h1><div class="bar"><i id="pb"></i></div><div class="st" id="st"></div></header>
+<div id="app"></div>
+<div class="card" id="res"><div class="n" id="rn"></div><p id="rm"></p><button class="btn" onclick="location.hash='';reset()">Reiniciar test</button></div>
+<script>
+const C=(x,y)=>`<path d="M${x}" fill="none" stroke="${y}" stroke-width="2"/>`;
+function chart(k){
+ const W=320,H=190,L=42,R=12,T=14,B=34;let s,P,xl,yl,xt,yt,col,gx=0;
+ if(k=='pm'){P=[[20,200],[40,350],[80,600],[120,1000]];s=[20,120,200,1000];xt=[20,40,60,80,100,120];yt=[200,400,600,800,1000];xl='PM2.5 (µg/m³)';yl='Casos';col='#2a5db0'}
+ if(k=='pr'){P=[[25,1],[60,1.5],[100,2],[120,2.5]];s=[25,120,1,2.5];xt=[25,60,100,120];yt=[1,1.5,2,2.5];xl='Temperatura (°C)';yl='Presión (atm)';col='#2e7d32'}
+ if(k=='vo'){P=[[300,2],[450,3],[600,4]];s=[300,600,2,4];xt=[300,450,600];yt=[2,3,4];xl='Temperatura (K)';yl='Volumen (L)';col='#e65100'}
+ if(k=='ho'){s=[1,28,0,1.05];xt=[1,7,14,21,28];yt=[];xl='Días del ciclo';yl='Nivel hormonal'}
+ const X=v=>L+(v-s[0])/(s[1]-s[0])*(W-L-R),Y=v=>H-B-(v-s[2])/(s[3]-s[2])*(H-B-T);
+ let o=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Gráfica ${yl} vs ${xl}">`;
+ yt.forEach(v=>o+=`<line class="gr" x1="${L}" x2="${W-R}" y1="${Y(v)}" y2="${Y(v)}"/><text x="${L-5}" y="${Y(v)+3}" text-anchor="end">${v}</text>`);
+ xt.forEach(v=>o+=`<text x="${X(v)}" y="${H-B+14}" text-anchor="middle">${v}</text>`);
+ o+=`<line class="ax" x1="${L}" x2="${W-R}" y1="${H-B}" y2="${H-B}"/><line class="ax" x1="${L}" x2="${L}" y1="${T}" y2="${H-B}"/>`;
+ o+=`<text x="${(L+W-R)/2}" y="${H-4}" text-anchor="middle">${xl}</text><text transform="rotate(-90 10 ${H/2})" x="10" y="${H/2}" text-anchor="middle">${yl}</text>`;
+ if(k=='ho'){const g=(d,m,sd,a)=>a*Math.exp(-((d-m)**2)/(2*sd*sd));let e='',p='';
+  for(let d=1;d<=28;d+=.5){const es=.12+g(d,13,2.4,.85)+g(d,21,3,.3),pg=.03+g(d,21,3.2,.6);e+=(d==1?'M':'L')+X(d)+' '+Y(es);p+=(d==1?'M':'L')+X(d)+' '+Y(pg)}
+  o+=C(e,'#d32f2f')+C(p,'#1976d2');o+=`<line class="gr" stroke-dasharray="3" x1="${X(14)}" x2="${X(14)}" y1="${T}" y2="${H-B}"/><text x="${L+8}" y="${T+8}" style="fill:#d32f2f">— Estrógeno</text><text x="${L+8}" y="${T+20}" style="fill:#1976d2">— Progesterona</text>`}
+ else{o+=C(P.map(p=>X(p[0])+' '+Y(p[1])).join('L'),col);P.forEach(p=>o+=`<circle cx="${X(p[0])}" cy="${Y(p[1])}" r="3.5" fill="${col}"/>`)}
+ return o+'</svg>'}
+const mc=(q,o,a,e)=>({t:'mc',q,o,a,e});
+const S=[
+{h:'1. Contaminación del aire',i:'Se midió el PM2.5 (partículas muy pequeñas que se respiran). La norma de la OMS es 25 µg/m³. <b>Industrial:</b> 110 µg/m³ · <b>Residencial:</b> 40 µg/m³.',g:'pm',qs:[
+ {t:'in',q:'¿Qué zona está más lejos de cumplir la norma? ¿Cuántos µg/m³ la supera?',f:[{l:'Zona',a:['industrial','fabrica']},{l:'Supera por (µg/m³)',n:85}],e:'La zona industrial: 110 − 25 = 85 µg/m³ sobre la norma. La residencial solo la supera por 15.'},
+ {t:'in',q:'Según la gráfica, cuando el PM2.5 sube de 40 a 80, los casos pasan de ___ a ___ aproximadamente.',f:[{l:'Casos con 40',n:350,tol:30},{l:'Casos con 80',n:600,tol:30}],e:'Con 40 µg/m³ hay ≈350 casos y con 80 µg/m³ ≈600 casos.'},
+ mc('¿Qué relación muestra la gráfica?',['A más partículas, más enfermedades respiratorias','A más partículas, menos enfermedades','No hay relación','Las enfermedades se deben solo al clima'],0,'Es una relación directa: la línea sube, así que más PM2.5 coincide con más casos respiratorios.'),
+ mc('¿Qué argumento apoya la idea «reducir los combustibles fósiles mejora la salud»?',['Los fósiles liberan partículas y gases nocivos al aire','No afectan la salud','El aire se limpia solo','Solo los vehículos contaminan'],0,'Quemar fósiles libera partículas y gases dañinos; reducirlos baja el PM2.5 y, con él, las enfermedades.'),
+ {t:'open',q:'Propón una acción de tu colegio o barrio para disminuir la contaminación del aire.',m:'Ejemplos: usar bicicleta o transporte público, sembrar árboles, no quemar basura, compartir el carro.'}]},
+{h:'2. Ciclo menstrual y hormonas',i:'Día 1: inicio de la menstruación · Día 14: ovulación · Día 28: reinicio del ciclo.',g:'ho',qs:[
+ mc('¿Qué hormona alcanza su punto más alto cerca del día 14 (ovulación)?',['Estrógeno','Progesterona'],0,'El pico de estrógeno ocurre justo antes de la ovulación (curva roja).'),
+ {t:'in',q:'¿Qué hormona predomina antes de la ovulación (días 6 a 13)?',f:[{l:'Hormona',a:['estrogeno']}],e:'Predomina el estrógeno, que va subiendo hasta el día 14.'},
+ mc('En la fase lútea (días 15-28) sube la progesterona. ¿Para qué sirve?',['Engrosa el endometrio para favorecer la implantación','Produce la menstruación','Madura el óvulo','Inicia la ovulación'],0,'La progesterona prepara y mantiene el endometrio por si hay un embrión que implantar.'),
+ {t:'open',q:'Si no hay fecundación, ¿qué pasa con las dos hormonas y qué ocurre después?',m:'Ambas disminuyen y se produce la menstruación (se desprende el endometrio).'},
+ mc('Para saber cuáles son los días fértiles de una mujer, ¿qué estrategia es mejor?',['Observar mamíferos en un zoológico','Medir la temperatura una sola semana','Registrar las fechas del ciclo durante varios meses','Analizar un solo caso clínico'],2,'Un registro de varios meses permite ver el patrón y estimar la ovulación con más confianza.')]},
+{h:'3. Gases: presión, temperatura y volumen',i:'Un recipiente cerrado con agua se calienta. Datos: 25 °C → 1,0 atm; 60 °C → 1,5 atm; 100 °C → 2,0 atm; 120 °C → 2,5 atm.',g:'pr',g2:'vo',qs:[
+ {t:'in',q:'Según la gráfica de volumen, ¿qué volumen ocupa el gas a 600 K?',f:[{l:'Volumen (L)',n:4}],e:'En la gráfica, a 600 K el volumen es 4 L.'},
+ {t:'in',q:'¿Qué presión tendría el gas a 100 °C según la gráfica de presión?',f:[{l:'Presión (atm)',n:2}],e:'A 100 °C la presión es 2,0 atm.'},
+ mc('¿Por qué aumenta la presión al calentar?',['Las moléculas se mueven más rápido y chocan más con las paredes','Aumenta la masa del agua','Cambia el recipiente','El agua se vuelve sal'],0,'Más temperatura = más energía cinética; hay más choques (y más fuertes) contra las paredes.'),
+ mc('Ley de Charles: V₁/T₁ = V₂/T₂. Un gas ocupa 2 L a 300 K y se calienta a 450 K. ¿Volumen final?',['1,3 L','3 L','0,67 L','6 L'],1,'V₂ = V₁·T₂/T₁ = 2 · 450 / 300 = 3 L. Al calentar a presión constante el volumen aumenta.')]},
+{h:'4. Termodinámica',qs:[
+ {t:'in',q:'Primer principio: ΔU = Q − W. Si al sistema se le dan Q = 50 J de calor y realiza W = 20 J de trabajo, ¿cuánto cambia su energía interna?',f:[{l:'ΔU (J)',n:30}],e:'ΔU = 50 − 20 = 30 J.'}]},
+{h:'5. Respiración en los seres vivos',i:'Pez: branquias, agua · Humano: pulmones, aire · Insecto: tráqueas, aire.',qs:[
+ {t:'in',q:'¿Qué organismo respira con tráqueas y en qué medio toma el oxígeno?',f:[{l:'Organismo',a:['insecto']},{l:'Medio',a:['aire']}],e:'El insecto, que toma el oxígeno del aire.'},
+ {t:'open',q:'Explica en una línea por qué un pez necesita branquias y no pulmones.',m:'Vive en el agua y las branquias toman el oxígeno disuelto en ella.'},
+ mc('¿Qué procedimiento comprobaría mejor el intercambio gaseoso en agua y en aire?',['Medir el oxígeno en el agua y en el aire con un sensor','Cambiar el color de las branquias','Pesar insectos','Medir las tráqueas'],0,'Medir directamente el oxígeno en ambos medios da datos comparables.')]},
+{h:'6. Eras geológicas',i:'Paleozoica: clima cálido y frío alternados, peces y primeros anfibios · Mesozoica: cálido y estable, dinosaurios y reptiles · Cenozoica: enfriamiento y glaciaciones, mamíferos y aves.',qs:[
+ {t:'in',q:'¿Qué grupo dominó en la era Mesozoica?',f:[{l:'Grupo',a:['dinosaurio','reptil']}],e:'Dinosaurios y reptiles.'},
+ {t:'in',q:'Verdadero (V) o falso (F):',f:[{l:'Los mamíferos dominaron en la era Cenozoica',sel:1,a:['V']},{l:'Los dinosaurios dominaron en la Paleozoica',sel:1,a:['F']}],e:'Cenozoica: mamíferos y aves (V). Los dinosaurios dominaron en la Mesozoica, no en la Paleozoica (F).'},
+ {t:'open',q:'Si la temperatura global aumentara de forma sostenida, ¿qué grupo tendría más ventajas? Explica en una línea.',m:'Los reptiles, porque su fisiología les permite prosperar en climas cálidos.'}]},
+{h:'7. Reproducción y sociedad',qs:[
+ mc('¿Qué organismo se reproduce de forma asexual?',['Helecho con gametos','Bacterias por fisión binaria','Perros','Aves que ponen huevos de gametos'],1,'Las bacterias se dividen por fisión binaria, sin gametos ni pareja.'),
+ {t:'in',q:'Verdadero (V) o falso (F):',f:[{l:'La reproducción sexual requiere dos progenitores y produce variabilidad genética',sel:1,a:['V']},{l:'En la asexual los descendientes son idénticos',sel:1,a:['V']}],e:'Ambas son verdaderas: la sexual combina gametos (variabilidad) y la asexual produce clones.'},
+ {t:'open',q:'Escribe una ventaja de la reproducción sexual y una de la asexual.',m:'Sexual: variabilidad genética. Asexual: rápida, produce muchos descendientes.'},
+ mc('Se quiere investigar cómo influyen las creencias culturales en el uso de anticonceptivos en la comunidad. ¿Qué estrategia es mejor?',['Encuestas anónimas sobre opiniones y prácticas','Calcular la edad promedio de la menarquia','Probar métodos en el laboratorio','Ver documentales de la historia'],0,'Las creencias y prácticas se investigan preguntando a la comunidad; el anonimato favorece respuestas sinceras.')]},
+{h:'8. Reflexión final',i:'Respuesta libre: escribe y luego compara con la respuesta de ejemplo.',qs:[
+ {t:'open',q:'Elige UNA de las gráficas del taller y explica qué relación muestra entre las dos variables.',m:'Ej.: en la de PM2.5, a más partículas más casos respiratorios (relación directa).'},
+ {t:'open',q:'Relaciona dos temas: ¿cómo puede el PM2.5 del aire afectar el sistema respiratorio humano (pulmones)?',m:'Las partículas llegan a los pulmones y causan o agravan enfermedades respiratorias.'},
+ {t:'open',q:'Escribe dos cosas que aprendiste en este taller y una duda que te quedó.',m:'Respuesta libre.'}]}
+];
+const norm=s=>String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim();
+let n=0,done=0,ok=0,auto=0,res={};
+function reset(){n=done=ok=auto=0;res={};build()}
+function upd(){document.getElementById('pb').style.width=done/n*100+'%';document.getElementById('st').textContent=`Respondidas ${done}/${n} · Correctas ${ok}/${auto}`;
+ if(done==n){const r=document.getElementById('res');r.style.display='block';const p=Math.round(ok/auto*100);document.getElementById('rn').textContent=`${ok} / ${auto} (${p}%)`;document.getElementById('rm').textContent=p>=80?'¡Excelente! Dominas los temas.':p>=60?'Buen trabajo. Repasa las preguntas en rojo.':'Sigue practicando: lee las explicaciones y reinicia el test.';r.scrollIntoView({behavior:'smooth'})}}
+function fin(card,good,fb,msg){card.classList.add(good?'ok':'no');fb.className='fb '+(good?'ok':'no');fb.innerHTML=(good?'✅ <b>¡Correcto!</b> ':'❌ <b>Revisa:</b> ')+'<span>'+msg+'</span>';done++;auto++;if(good)ok++;upd()}
+function build(){
+ const app=document.getElementById('app');app.innerHTML='';document.getElementById('res').style.display='none';n=0;let k=0;
+ S.forEach(sec=>{n+=sec.qs.length});
+ S.forEach(sec=>{
+  const h=document.createElement('div');h.innerHTML=`<h2>${sec.h}</h2>${sec.i?`<p class="intro">${sec.i}</p>`:''}${sec.g?chart(sec.g):''}${sec.g2?chart(sec.g2):''}`;app.appendChild(h);
+  sec.qs.forEach(q=>{k++;const c=document.createElement('div');c.className='card';c.innerHTML=`<p class="q"><b>${k}.</b> ${q.q}</p>`;const fb=document.createElement('div');fb.className='fb';
+   if(q.t=='mc'){q.o.forEach((t,i)=>{const b=document.createElement('button');b.className='opt';b.textContent='ABCD'[i]+'. '+t;b.onclick=()=>{c.querySelectorAll('.opt').forEach((x,j)=>{x.disabled=true;if(j==q.a)x.classList.add('c')});const g=i==q.a;if(!g)b.classList.add('w');fin(c,g,fb,q.e)};c.appendChild(b)})}
+   if(q.t=='in'){const els=q.f.map(f=>{const d=document.createElement('div');d.className='f';d.innerHTML=`<label>${f.l}</label>`;let e;if(f.sel){e=document.createElement('select');e.innerHTML='<option value="">—</option><option>V</option><option>F</option>'}else{e=document.createElement('input');e.placeholder=f.n!==undefined?'número':'respuesta'}d.appendChild(e);c.appendChild(d);return e});
+    const b=document.createElement('button');b.className='btn';b.textContent='Comprobar';b.onclick=()=>{if(els.some(e=>!e.value.trim())){fb.className='fb md';fb.textContent='Completa todos los campos.';return}
+     let all=true;els.forEach((e,i)=>{const f=q.f[i];let g;if(f.n!==undefined){const v=parseFloat(e.value.replace(',','.'));g=Math.abs(v-f.n)<=(f.tol||0.001)}else g=f.a.some(a=>norm(e.value).includes(norm(a)));e.classList.add(g?'c':'w');e.disabled=true;if(!g)all=false});b.disabled=true;fin(c,all,fb,q.e)};c.appendChild(b)}
+   if(q.t=='open'){const t=document.createElement('textarea');t.placeholder='Escribe tu respuesta…';c.appendChild(t);const b=document.createElement('button');b.className='btn g';b.textContent='Ver respuesta de ejemplo';b.onclick=()=>{if(!t.value.trim()){fb.className='fb md';fb.textContent='Escribe primero tu respuesta y luego compárala.';return}t.disabled=b.disabled=true;fb.className='fb md';fb.innerHTML='💡 <b>Respuesta de ejemplo:</b> '+q.m+'<br><small>Compárala con la tuya (no cuenta en el puntaje).</small>';done++;upd()};c.appendChild(b)}
+   c.appendChild(fb);app.appendChild(c)})});
+ upd()}
+build();
+</script></main></body></html>
