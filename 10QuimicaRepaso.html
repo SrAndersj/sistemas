@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Repaso de Química – Grado Décimo</title>
+<style>
+:root{--bg:#f4f7fb;--card:#fff;--ink:#17202e;--mut:#5b6678;--line:#d9e0ea;--pri:#2563eb;--priink:#fff;--ok:#0f7b4a;--okbg:#e3f6ec;--bad:#b42318;--badbg:#fdeceb;--tip:#8a5a00;--tipbg:#fff4dc;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1520;--card:#18212f;--ink:#e8edf5;--mut:#9aa6b8;--line:#2b3649;--pri:#6b9cff;--priink:#0b1220;--ok:#5fd59a;--okbg:#10301f;--bad:#ff8d82;--badbg:#3a1a18;--tip:#f3c56b;--tipbg:#33280e}}
+:root[data-theme="dark"]{--bg:#0f1520;--card:#18212f;--ink:#e8edf5;--mut:#9aa6b8;--line:#2b3649;--pri:#6b9cff;--priink:#0b1220;--ok:#5fd59a;--okbg:#10301f;--bad:#ff8d82;--badbg:#3a1a18;--tip:#f3c56b;--tipbg:#33280e}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:720px;margin:0 auto;padding:18px 14px 40px}
+h1{font-size:1.4rem;margin:.2rem 0}
+.sub{color:var(--mut);margin:0 0 14px;font-size:.92rem}
+.stats{display:flex;gap:8px;margin:12px 0}
+.stat{flex:1;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 10px;text-align:center}
+.stat b{display:block;font-size:1.25rem}.stat span{font-size:.75rem;color:var(--mut)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.chip{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:99px;padding:6px 12px;font:inherit;font-size:.85rem;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--pri);color:var(--priink);border-color:var(--pri)}
+details{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 12px;margin:10px 0;font-size:.9rem}
+summary{cursor:pointer;font-weight:600}
+.ref{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.ref div{background:var(--bg);border-radius:8px;padding:6px 8px}
+@media(max-width:520px){.ref{grid-template-columns:1fr}}
+.q{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-top:12px}
+.tag{display:inline-block;font-size:.75rem;font-weight:700;color:var(--pri);text-transform:uppercase;letter-spacing:.04em}
+.q p.t{font-size:1.08rem;margin:.3rem 0 .8rem}
+.f{margin:.7rem 0}
+.f label{display:block;font-weight:600;margin-bottom:4px;font-size:.95rem}
+.row{display:flex;align-items:center;gap:8px}
+input{width:150px;max-width:55%;padding:9px 11px;border:2px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit}
+input:focus{outline:none;border-color:var(--pri)}
+input.ok{border-color:var(--ok)}input.bad{border-color:var(--bad)}
+.u{color:var(--mut)}
+.fb{margin-top:6px;padding:8px 10px;border-radius:8px;font-size:.92rem;display:none}
+.fb.ok{display:block;background:var(--okbg);color:var(--ok)}
+.fb.bad{display:block;background:var(--badbg);color:var(--bad)}
+.hint{background:var(--tipbg);color:var(--tip);padding:8px 10px;border-radius:8px;font-size:.9rem;margin-top:8px;display:none}
+.btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+button.b{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:9px 14px;border-radius:10px;font:inherit;cursor:pointer}
+button.p{background:var(--pri);color:var(--priink);border-color:var(--pri);font-weight:600}
+.sol{display:none;margin-top:12px;padding:10px 12px;border-left:4px solid var(--pri);background:var(--bg);border-radius:8px;font-size:.93rem}
+.final{margin-top:10px;font-weight:700}
+</style>
+</head>
+<body>
+<main>
+<h1>🧪 Repaso de Química · Décimo</h1>
+<p class="sub">Estequiometría y soluciones. Los valores cambian cada vez: resuelve, escribe tu respuesta y recibe retroalimentación al instante.</p>
+
+<div class="stats">
+<div class="stat"><b id="sR">0</b><span>Correctas</span></div>
+<div class="stat"><b id="sT">0</b><span>Intentadas</span></div>
+<div class="stat"><b id="sS">0</b><span>Racha 🔥</span></div>
+</div>
+
+<div class="chips" id="chips"></div>
+
+<details>
+<summary>📘 Fórmulas y masas atómicas</summary>
+<div class="ref">
+<div><b>Moles:</b> n = m ÷ M<br>m = n · M</div>
+<div><b>Estequiometría:</b> g → mol → mol → g<br>mol buscado = mol dado × (coef. buscado ÷ coef. dado)</div>
+<div><b>% m/v</b> = (g soluto ÷ mL solución) · 100</div>
+<div><b>Molaridad:</b> M = n ÷ V (V en litros, 1 L = 1000 mL)</div>
+</div>
+<p style="margin:8px 0 0"><b>Masas (g/mol):</b> H = 1 · C = 12 · O = 16 · Na = 23 · Mg = 24 · Cl = 35,5 · Ca = 40</p>
+<p style="margin:4px 0 0;color:var(--mut)">Escribe decimales con coma o punto. Se acepta un margen de error del 1 %.</p>
+</details>
+
+<div class="q" id="q"></div>
+</main>
+
+<script>
+const EL={H:1,C:12,O:16,Na:23,Mg:24,Cl:35.5,Ca:40};
+const SP={Ca:['Ca',{Ca:1}],Na:['Na',{Na:1}],Mg:['Mg',{Mg:1}],O2:['O₂',{O:2}],H2:['H₂',{H:2}],
+CaO:['CaO',{Ca:1,O:1}],NaCl:['NaCl',{Na:1,Cl:1}],MgO:['MgO',{Mg:1,O:1}],H2O:['H₂O',{H:2,O:1}],
+CaCl2:['CaCl₂',{Ca:1,Cl:2}],Na2CO3:['Na₂CO₃',{Na:2,C:1,O:3}],CaCO3:['CaCO₃',{Ca:1,C:1,O:3}],
+CO2:['CO₂',{C:1,O:2}],CH4:['CH₄',{C:1,H:4}],MgCl2:['MgCl₂',{Mg:1,Cl:2}],NaOH:['NaOH',{Na:1,O:1,H:1}],
+CaOH2:['Ca(OH)₂',{Ca:1,O:2,H:2}],HCl:['HCl',{H:1,Cl:1}]};
+const M=k=>Object.entries(SP[k][1]).reduce((s,[e,n])=>s+EL[e]*n,0);
+const D=k=>SP[k][0];
+const COMP=['CaO','NaCl','MgO','H2O','CaCl2','Na2CO3','CaCO3','CO2','CH4','MgCl2','NaOH','CaOH2','HCl'];
+const SOLU=['NaCl','NaOH','CaCl2','Na2CO3','MgCl2','HCl'];
+const RX=[['2 Ca + O₂ → 2 CaO','Ca',2,'CaO',2],['2 Na + Cl₂ → 2 NaCl','Na',2,'NaCl',2],
+['CaCl₂ + Na₂CO₃ → CaCO₃ + 2 NaCl','CaCl2',1,'NaCl',2],['CaCl₂ + Na₂CO₃ → CaCO₃ + 2 NaCl','Na2CO3',1,'CaCO3',1],
+['2 Mg + O₂ → 2 MgO','Mg',2,'MgO',2],['2 Mg + O₂ → 2 MgO','O2',1,'MgO',2],
+['CH₄ + 2 O₂ → CO₂ + 2 H₂O','CH4',1,'H2O',2],['CH₄ + 2 O₂ → CO₂ + 2 H₂O','CH4',1,'CO2',1],
+['2 H₂ + O₂ → 2 H₂O','H2',2,'H2O',2],['2 H₂ + O₂ → 2 H₂O','O2',1,'H2O',2],
+['CaCO₃ → CaO + CO₂','CaCO3',1,'CO2',1],['2 NaOH + MgCl₂ → Mg(OH)₂ + 2 NaCl','MgCl2',1,'NaCl',2]];
+const ATOM={Ca:['Ca',40],Na:['Na',23],Mg:['Mg',24]};
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const num=s=>parseFloat(String(s).replace(/\s/g,'').replace(',','.'));
+const fmt=n=>(+n.toFixed(3)).toString().replace('.',',');
+const ok=(v,a)=>Math.abs(v-a)<=Math.max(Math.abs(a)*0.01,0.0051);
+
+/* ---------- Generadores ---------- */
+const GEN={
+molar(){
+  const k=pick(COMP),c=SP[k][1],a=M(k);
+  const once=Object.keys(c).reduce((s,e)=>s+EL[e],0);
+  const parts=Object.entries(c).map(([e,n])=>n>1?`${n}·${fmt(EL[e])}`:fmt(EL[e])).join(' + ');
+  const lista=Object.entries(c).map(([e,n])=>`${e} × ${n}`).join(', ');
+  return{tag:'Masa molar',text:`Calcula la masa molar de <b>${D(k)}</b>.`,
+  hint:`Átomos en la fórmula: ${lista}. Multiplica la masa de cada elemento por su subíndice y suma.`,
+  fields:[{label:'M =',unit:'g/mol',ans:a,fb:v=>ok(v,once)&&once!==a?'Sumaste cada elemento una sola vez. Recuerda multiplicar por los subíndices.':'No coincide. Revisa cuántos átomos hay de cada elemento y sus masas atómicas.'}],
+  sol:`M(${D(k)}) = ${parts} = <b>${fmt(a)} g/mol</b>`};
+},
+conv(){
+  const k=pick(COMP),m=M(k),n=pick([0.2,0.25,0.4,0.5,1.5,2,3,4,5]),g=+(n*m).toFixed(3);
+  if(Math.random()<.5)return{tag:'Gramos → moles',text:`Pasa <b>${fmt(g)} g</b> de <b>${D(k)}</b> a moles. (${D(k)} = ${fmt(m)} g/mol)`,
+  hint:'Usa n = m ÷ M: gramos divididos entre la masa molar.',
+  fields:[{label:'n =',unit:'mol',ans:n,fb:v=>ok(v,g*m)?'Multiplicaste. Para pasar de gramos a moles se <b>divide</b> entre M.':ok(v,m/g)?'Invertiste la división: es m ÷ M, no M ÷ m.':'Revisa la división n = m ÷ M.'}],
+  sol:`n = ${fmt(g)} ÷ ${fmt(m)} = <b>${fmt(n)} mol</b>`};
+  return{tag:'Moles → gramos',text:`Pasa <b>${fmt(n)} mol</b> de <b>${D(k)}</b> a gramos. (${D(k)} = ${fmt(m)} g/mol)`,
+  hint:'Usa m = n · M: moles por masa molar.',
+  fields:[{label:'m =',unit:'g',ans:g,fb:v=>ok(v,n/m)?'Dividiste. Para pasar de moles a gramos se <b>multiplica</b> por M.':'Revisa la multiplicación m = n · M.'}],
+  sol:`m = ${fmt(n)} · ${fmt(m)} = <b>${fmt(g)} g</b>`};
+},
+estq(){
+  const [eq,a,ca,b,cb]=pick(RX),Ma=M(a),Mb=M(b),n=pick([0.2,0.4,0.5,1,1.5,2]);
+  const g=+(n*Ma).toFixed(3),nB=n*cb/ca,gB=+(nB*Mb).toFixed(3);
+  return{tag:'Estequiometría',text:`Con la ecuación balanceada <b>${eq}</b>, calcula los gramos de <b>${D(b)}</b> que se obtienen a partir de <b>${fmt(g)} g</b> de <b>${D(a)}</b>. (${D(a)} = ${fmt(Ma)} g/mol; ${D(b)} = ${fmt(Mb)} g/mol)`,
+  hint:'Ruta: gramos → moles → moles (con coeficientes) → gramos.',
+  fields:[
+   {label:`a) Moles de ${D(a)}`,unit:'mol',ans:n,fb:v=>ok(v,g*Ma)?'Multiplicaste. n = m ÷ M.':'Divide los gramos entre la masa molar de '+D(a)+'.'},
+   {label:`b) Moles de ${D(b)} que se forman`,unit:'mol',ans:nB,fb:(v,u)=>{
+     if(ca!==cb&&ok(v,u[0]))return`Usaste relación 1 : 1, pero los coeficientes son ${ca} : ${cb}. Multiplica por ${cb}/${ca}.`;
+     if(ca!==cb&&ok(v,u[0]*ca/cb))return`Invertiste la relación. Es (coef. buscado ÷ coef. dado) = ${cb}/${ca}.`;
+     return`Usa los coeficientes de la ecuación: ${ca} mol de ${D(a)} → ${cb} mol de ${D(b)}.`;}},
+   {label:`c) Gramos de ${D(b)}`,unit:'g',ans:gB,fb:(v,u)=>ok(v,u[1]/Mb)?'Dividiste. Para llegar a gramos se <b>multiplica</b> moles × M.':ok(v,u[1]*Mb)?'Tu procedimiento en c) es correcto con tu valor de b), pero el paso b) tiene un error.':'Multiplica los moles de '+D(b)+' por su masa molar.'}],
+  sol:`a) n = ${fmt(g)} ÷ ${fmt(Ma)} = ${fmt(n)} mol<br>b) Relación ${ca} : ${cb} → ${fmt(n)} × ${cb}/${ca} = ${fmt(nB)} mol<br>c) m = ${fmt(nB)} · ${fmt(Mb)} = <b>${fmt(gB)} g de ${D(b)}</b>`};
+},
+pct(){
+  const V=pick([50,80,100,150,200,250,400,500]),p=pick([2,3,4,5,6,8,10,12]),g=+(p*V/100).toFixed(3);
+  if(Math.random()<.5)return{tag:'% m/v',text:`Se disuelven <b>${fmt(g)} g</b> de NaCl en agua hasta completar <b>${V} mL</b> de solución. ¿Cuál es el % m/v?`,
+  hint:'% m/v = (g de soluto ÷ mL de solución) · 100.',
+  fields:[{label:'% m/v =',unit:'%',ans:p,fb:v=>ok(v,g/V)?'Falta multiplicar por 100.':ok(v,V/g*100)?'Invertiste: va g de soluto sobre mL de solución.':'Revisa: (g ÷ mL) · 100.'}],
+  sol:`% m/v = (${fmt(g)} ÷ ${V}) · 100 = ${fmt(g/V)} · 100 = <b>${fmt(p)} %</b>`};
+  return{tag:'Gramos de soluto',text:`¿Cuántos gramos de soluto hay en <b>${V} mL</b> de una solución al <b>${p} % m/v</b>?`,
+  hint:`${p} % m/v significa ${p} g de soluto en cada 100 mL. Escala hasta ${V} mL.`,
+  fields:[{label:'m soluto =',unit:'g',ans:g,fb:v=>ok(v,p*V)?'Olvidaste dividir entre 100.':ok(v,p)?`Esos son los gramos para 100 mL; tu solución tiene ${V} mL.`:'Piensa: ¿cuántas veces cabe 100 mL en '+V+' mL?'}],
+  sol:`${p} g por cada 100 mL → ${p} · ${fmt(V/100)} = <b>${fmt(g)} g</b>`};
+},
+molr(){
+  if(Math.random()<.45){
+    const Mm=pick([0.2,0.4,0.5,1,1.5,2,2.5]),V=pick([0.5,1,2,2.5,4,5]),n=+(Mm*V).toFixed(3);
+    return{tag:'Molaridad',text:`Calcula la molaridad de una solución con <b>${fmt(n)} mol</b> de soluto en <b>${fmt(V)} L</b> de solución.`,
+    hint:'M = n ÷ V (moles entre litros).',
+    fields:[{label:'M =',unit:'mol/L',ans:Mm,fb:v=>ok(v,V/n)?'Invertiste: M = moles ÷ litros.':ok(v,n*V)?'Multiplicaste. Se divide: M = n ÷ V.':'Revisa la división n ÷ V.'}],
+    sol:`M = ${fmt(n)} ÷ ${fmt(V)} = <b>${fmt(Mm)} M</b>`};
+  }
+  const k=pick(SOLU),m=M(k),n=pick([0.1,0.2,0.4,0.5,0.6,1]),mL=pick([100,200,250,400,500]),g=+(n*m).toFixed(3),L=mL/1000,Mm=n/L;
+  return{tag:'Molaridad (3 pasos)',text:`Se disuelven <b>${fmt(g)} g</b> de <b>${D(k)}</b> en agua hasta completar <b>${mL} mL</b> de solución. (${D(k)} = ${fmt(m)} g/mol)`,
+  hint:'1) moles = g ÷ M · 2) mL ÷ 1000 = L · 3) M = n ÷ V.',
+  fields:[
+   {label:'a) Moles de soluto',unit:'mol',ans:n,fb:v=>ok(v,g*m)?'Multiplicaste. n = m ÷ M.':'Divide los gramos entre la masa molar.'},
+   {label:'b) Volumen en litros',unit:'L',ans:L,fb:v=>ok(v,mL)?'Eso son mL. Divide entre 1000.':ok(v,mL*1000)?'Al revés: para pasar de mL a L se divide entre 1000.':'1 L = 1000 mL.'},
+   {label:'c) Molaridad',unit:'mol/L',ans:Mm,fb:(v,u)=>ok(v,n/mL)?'Usaste mL. El volumen debe ir en litros.':ok(v,L/n)?'Invertiste: M = n ÷ V.':ok(v,u[0]/u[1])?'Tu c) es coherente con tus valores a) y b), pero alguno de ellos tiene un error.':'M = moles ÷ litros.'}],
+  sol:`a) n = ${fmt(g)} ÷ ${fmt(m)} = ${fmt(n)} mol<br>b) V = ${mL} ÷ 1000 = ${fmt(L)} L<br>c) M = ${fmt(n)} ÷ ${fmt(L)} = <b>${fmt(Mm)} M</b>`};
+}};
+const TOP={todos:'Todos',molar:'Masa molar',conv:'g ↔ mol',estq:'Estequiometría',pct:'% m/v',molr:'Molaridad'};
+const BUENO=['¡Correcto!','¡Muy bien!','¡Exacto!','¡Así se hace!','¡Perfecto!'];
+
+let topic='todos',Q,first,R=0,T=0,S=0;
+function chips(){
+  $('#chips').innerHTML=Object.entries(TOP).map(([k,v])=>`<button class="chip" aria-pressed="${k===topic}" data-k="${k}">${v}</button>`).join('');
+  document.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{topic=b.dataset.k;chips();nueva()});
+}
+function $(s){return document.querySelector(s)}
+function nueva(){
+  const k=topic==='todos'?pick(Object.keys(GEN)):topic;
+  Q=GEN[k]();first=true;
+  $('#q').innerHTML=`<span class="tag">${Q.tag}</span><p class="t">${Q.text}</p>`+
+   Q.fields.map((f,i)=>`<div class="f"><label for="i${i}">${f.label}</label><div class="row"><input id="i${i}" inputmode="decimal" autocomplete="off" placeholder="…"><span class="u">${f.unit}</span></div><div class="fb" id="fb${i}"></div></div>`).join('')+
+   `<div class="hint" id="hint">💡 ${Q.hint}</div><div class="final" id="final"></div>
+   <div class="btns"><button class="b p" id="chk">Comprobar</button><button class="b" id="hb">💡 Pista</button><button class="b" id="sb">Ver solución</button><button class="b" id="nx">Otro ejercicio ➜</button></div>
+   <div class="sol" id="sol"><b>Solución paso a paso</b><br>${Q.sol}</div>`;
+  $('#chk').onclick=check;$('#nx').onclick=nueva;
+  $('#hb').onclick=()=>{$('#hint').style.display='block'};
+  $('#sb').onclick=()=>{$('#sol').style.display='block';if(first){first=false;T++;S=0;stats()}};
+  document.querySelectorAll('#q input').forEach(i=>i.addEventListener('keydown',e=>{if(e.key==='Enter')check()}));
+  $('#i0').focus({preventScroll:true});
+}
+function check(){
+  const u=Q.fields.map((f,i)=>num($('#i'+i).value));
+  if(u.every(isNaN)){$('#final').textContent='Escribe al menos una respuesta.';return}
+  let all=true;
+  Q.fields.forEach((f,i)=>{
+    const inp=$('#i'+i),fb=$('#fb'+i),v=u[i];inp.className='';fb.className='fb';
+    if(isNaN(v)){all=false;fb.className='fb bad';fb.innerHTML='Escribe un número.';return}
+    if(ok(v,f.ans)){inp.className='ok';fb.className='fb ok';fb.innerHTML='✅ '+pick(BUENO)}
+    else{all=false;inp.className='bad';fb.className='fb bad';fb.innerHTML='❌ '+f.fb(v,u)}
+  });
+  if(first){first=false;T++;if(all){R++;S++}else S=0;stats()}
+  $('#final').innerHTML=all?'🎉 ¡Ejercicio completo! Pulsa «Otro ejercicio» para seguir.':'Corrige las respuestas marcadas y vuelve a comprobar.';
+  if(!all)$('#sb').style.display='';
+}
+function stats(){$('#sR').textContent=R;$('#sT').textContent=T;$('#sS').textContent=S}
+chips();nueva();
+</script>
+</body>
+</html>
